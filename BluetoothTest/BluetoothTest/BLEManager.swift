@@ -12,7 +12,7 @@ import CoreBluetooth
 enum HeaterServices: String {
     case customService                  = "8c810001-4d6b-4d4c-9e14-cfc7db46018d"
     case batteryService                 = "0x180F"
-    case deviceFirmwareUpdateService    = "8e400001-f315-4f60-95fb8-838830daea50"
+    case deviceFirmwareUpdateService    = "8e400001-f315-4f60-9fb8-838830daea50"
     case deviceInformationService       = "0x180A"
 }
 
