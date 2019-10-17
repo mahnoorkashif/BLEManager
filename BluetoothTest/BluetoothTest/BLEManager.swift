@@ -21,17 +21,17 @@ enum HeaterServices: String {
 }
 
 enum HeaterServicesCharacteristics: String {
-    case systemStats    = "8c810003-4d6b-4d4c-9e14-cfc7db46018d"
-    case initialOnTime  = "8c810005-4d6b-4d4c-9e14-cfc7db46018d"
-    case waveOnTime     = "8c810006-4d6b-4d4c-9e14-cfc7db46018d"
-    case waveOffTime    = "8c810007-4d6b-4d4c-9e14-cfc7db46018d"
-    case waveTimeLimit  = "8c810009-4d6b-4d4c-9e14-cfc7db46018d"
-    case tempUpperLimit = "8c810004-4d6b-4d4c-9e14-cfc7db46018d"
-    case controlStatus  = "8c810008-4d6b-4d4c-9e14-cfc7db46018d"
+    case waveOnTime         = "8c810006-4d6b-4d4c-9e14-cfc7db46018d"
+    case waveOffTime        = "8c810007-4d6b-4d4c-9e14-cfc7db46018d"
+    case systemStats        = "8c810003-4d6b-4d4c-9e14-cfc7db46018d"
+    case controlStatus      = "8c810008-4d6b-4d4c-9e14-cfc7db46018d"
+    case waveTimeLimit      = "8c810009-4d6b-4d4c-9e14-cfc7db46018d"
+    case initialOnTime      = "8c810005-4d6b-4d4c-9e14-cfc7db46018d"
+    case tempUpperLimit     = "8c810004-4d6b-4d4c-9e14-cfc7db46018d"
     
-    case batteryLevel   = "0x2A19"
+    case batteryLevel       = "0x2A19"
     
-    case deviceFirmware = "8e400001-f315-4f60-9fb8-838830daea50"
+    case deviceFirmware     = "8e400001-f315-4f60-9fb8-838830daea50"
     
     func getUUID() -> CBUUID {
         return CBUUID(string: self.rawValue)
@@ -46,18 +46,18 @@ class BLEManager: NSObject {
     private var centralManager          : CBCentralManager?
     private var allPeripherals          : [CBPeripheral] = []
     
-    var getConnectionStatus             : ((String)->())?
-    var reloadTableView                 : (([CBPeripheral])->())?
-    
-    private var systemStats             : CBCharacteristic?
-    private var initialOnTime           : CBCharacteristic?
     private var waveOnTime              : CBCharacteristic?
     private var waveOffTime             : CBCharacteristic?
-    private var waveTimeLimit           : CBCharacteristic?
-    private var tempUpperLimit          : CBCharacteristic?
-    private var controlStatus           : CBCharacteristic?
+    private var systemStats             : CBCharacteristic?
     private var batteryLevel            : CBCharacteristic?
+    private var waveTimeLimit           : CBCharacteristic?
+    private var controlStatus           : CBCharacteristic?
+    private var initialOnTime           : CBCharacteristic?
     private var deviceFirmware          : CBCharacteristic?
+    private var tempUpperLimit          : CBCharacteristic?
+    
+    var getConnectionStatus             : ((String)->())?
+    var reloadTableView                 : (([CBPeripheral])->())?
     
     private override init() {
         super.init()
@@ -82,8 +82,32 @@ extension BLEManager {
         }
     }
     
+    func connectPeripheral() {
+        guard let bluetoothPeripheral = currentPeripheral else { return }
+        centralManager?.connect(bluetoothPeripheral)
+    }
+    
+    func disconnectCurrentPeripheral() {
+        guard let bluetoothPeripheral = currentPeripheral else { return }
+        centralManager?.cancelPeripheralConnection(bluetoothPeripheral)
+        currentPeripheral = nil
+    }
+    
+    func setCurrentPeripheral(_ peripheral: CBPeripheral) {
+        currentPeripheral = peripheral
+        currentPeripheral?.delegate = self
+    }
+    
     func getCurrentPeripheral() -> CBPeripheral? {
         return currentPeripheral
+    }
+    
+    func getCentralManager() -> CBCentralManager? {
+        return centralManager
+    }
+    
+    func getAllPeripherals() -> [CBPeripheral]? {
+        return allPeripherals
     }
     
     func getSystemStatsCharacteristic() -> CBCharacteristic? {
@@ -145,20 +169,9 @@ extension BLEManager: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if !allPeripherals.contains(peripheral) {
+        if peripheral.name == deviceName && !allPeripherals.contains(peripheral) {
             allPeripherals.append(peripheral)
             reloadTableView?(allPeripherals)
-        }
-        if peripheral.name == deviceName {
-            
-        }
-        
-        if peripheral.name == deviceName {
-            currentPeripheral = peripheral
-            currentPeripheral?.delegate = self
-//            centralManager?.stopScan()
-            guard let bluetoothPeripheral = currentPeripheral else { return }
-            centralManager?.connect(bluetoothPeripheral)
         }
     }
     
@@ -171,10 +184,8 @@ extension BLEManager: CBCentralManagerDelegate {
 
 extension BLEManager: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        print(peripheral)
         guard let services = currentPeripheral?.services else { return }
         for service in services {
-            print(service)
             currentPeripheral?.discoverCharacteristics(nil, for: service)
         }
     }

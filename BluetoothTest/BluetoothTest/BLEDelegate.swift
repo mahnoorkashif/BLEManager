@@ -19,4 +19,11 @@ import Foundation
     @objc optional func getControlStatus(_ currentControlStatus: UInt8)
 }
 
-extension BLEDelegate {}
+extension BLEDelegate {
+    func connectToPeripheral(at index: Int) {
+        guard let newCurrent = BLEManager.shared.getAllPeripherals()?[index] else { return }
+        BLEManager.shared.disconnectCurrentPeripheral()
+        BLEManager.shared.setCurrentPeripheral(newCurrent)
+        BLEManager.shared.connectPeripheral()
+    }
+}
