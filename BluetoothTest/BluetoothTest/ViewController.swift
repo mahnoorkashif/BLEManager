@@ -29,14 +29,13 @@ class ViewController: UIViewController {
 
 extension ViewController {
     func initManager() {
+        BLEManager.shared.delegate = self
         BLEManager.shared.setDeviceName(deviceName: "Brilliantly Warm")
+        
         BLEManager.shared.getConnectionStatus = { connectionStatus in
             self.lbl.text = connectionStatus
         }
-        BLEManager.shared.getBatteryLevel = { batteryLevel in
-//            self.lbl2.text = batteryLevel
-            print("hello")
-        }
+        
         BLEManager.shared.reloadTableView = { [weak self] allDevices in
             self?.peripheralDevices = allDevices
             self?.peripheralsTableView.reloadData()
@@ -53,5 +52,39 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = UITableViewCell()
         cell.textLabel?.text = peripheralDevices?[indexPath.row].name ?? "No name"
         return cell
+    }
+}
+
+extension ViewController: BLEDelegate {
+    func getInitialSystemStats(_ currentTemperature: Int) {
+        print("Initial Temperature: \(currentTemperature)")
+    }
+    
+    func getInitialOnTime(_ currentOnTime: UInt16) {
+        print("Initial On Time: \(currentOnTime)")
+    }
+    
+    func getWaveOnTime(_ currentWaveOnTime: UInt16) {
+        print("Initial Wave On Time: \(currentWaveOnTime)")
+    }
+    
+    func getWaveOffTime(_ currentWaveOffTime: UInt16) {
+        print("Initial Wave Off Time: \(currentWaveOffTime)")
+    }
+    
+    func getWaveTimeLimit(_ currentWaveTimeLimit: UInt16) {
+        print("Initial Wave Time Limit: \(currentWaveTimeLimit)")
+    }
+    
+    func getTempUpperLimit(_ currentTempUpperLimit: UInt8) {
+        print("Initial Temp Upper Limit: \(currentTempUpperLimit)")
+    }
+    
+    func getControlStatus(_ currentControlStatus: UInt8) {
+        print("Initial Control Status: \(currentControlStatus)")
+    }
+    
+    func getInitialBatteryLevel(_ batteryLevel: String) {
+        print("Initial Battery Level: \(batteryLevel)")
     }
 }

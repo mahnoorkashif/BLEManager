@@ -9,7 +9,6 @@
 import Foundation
 
 struct CharacteristicReader {
-    
     static func readUInt8Value(data aData :Data?) -> UInt8 {
         var array = UnsafeMutablePointer<UInt8>(OpaquePointer(((aData as NSData?)?.bytes)!))
         return self.readUInt8Value(ptr: &array)
