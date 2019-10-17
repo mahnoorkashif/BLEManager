@@ -33,7 +33,7 @@ extension ViewController {
         BLEManager.shared.setDeviceName(deviceName: "Brilliantly Warm")
         
         BLEManager.shared.getConnectionStatus = { connectionStatus in
-            self.lbl.text = connectionStatus
+            self.lbl.text = "Connected to \(connectionStatus)."
         }
         
         BLEManager.shared.reloadTableView = { [weak self] allDevices in

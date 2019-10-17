@@ -14,6 +14,10 @@ enum HeaterServices: String {
     case batteryService                 = "0x180F"
     case deviceFirmwareUpdateService    = "8e400001-f315-4f60-9fb8-838830daea50"
     case deviceInformationService       = "0x180A"
+    
+    func getUUID() -> CBUUID {
+        return CBUUID(string: self.rawValue)
+    }
 }
 
 enum HeaterServicesCharacteristics: String {
@@ -28,16 +32,19 @@ enum HeaterServicesCharacteristics: String {
     case batteryLevel   = "0x2A19"
     
     case deviceFirmware = "8e400001-f315-4f60-9fb8-838830daea50"
+    
+    func getUUID() -> CBUUID {
+        return CBUUID(string: self.rawValue)
+    }
 }
 
 class BLEManager: NSObject {
-    
-    var delegate                        : BLEDelegate?
-    static let shared                   = BLEManager()
     private var deviceName              : String?
+    static let shared                   = BLEManager()
+    weak var delegate                   : BLEDelegate?
     private var currentPeripheral       : CBPeripheral?
-    private var allPeripherals          : [CBPeripheral] = []
     private var centralManager          : CBCentralManager?
+    private var allPeripherals          : [CBPeripheral] = []
     
     var getConnectionStatus             : ((String)->())?
     var reloadTableView                 : (([CBPeripheral])->())?
@@ -63,20 +70,56 @@ extension BLEManager {
         self.deviceName = deviceName
     }
     
-    func getUUIDs(_ ids: [String]) -> [CBUUID] {
-        var UUIDs: [CBUUID] = []
-        for id in ids {
-            UUIDs.append(CBUUID(string: id))
+    func readValue(for characteristic: CBCharacteristic) {
+        if characteristic.properties.contains(.read) {
+            currentPeripheral?.readValue(for: characteristic)
         }
-        return UUIDs
     }
     
     func setNotification(_ enabled: Bool, for characteristic: CBCharacteristic) {
-        currentPeripheral?.setNotifyValue(enabled, for: characteristic)
+        if characteristic.properties.contains(.notify) {
+            currentPeripheral?.setNotifyValue(enabled, for: characteristic)
+        }
     }
     
     func getCurrentPeripheral() -> CBPeripheral? {
         return currentPeripheral
+    }
+    
+    func getSystemStatsCharacteristic() -> CBCharacteristic? {
+        return systemStats
+    }
+    
+    func getInitialOnTimeCharacteristic() -> CBCharacteristic? {
+        return systemStats
+    }
+    
+    func getWaveOnTimeCharacteristic() -> CBCharacteristic? {
+        return systemStats
+    }
+    
+    func getWaveOffTimeCharacteristic() -> CBCharacteristic? {
+        return systemStats
+    }
+    
+    func getWaveTimeLimitCharacteristic() -> CBCharacteristic? {
+        return systemStats
+    }
+    
+    func getTempUpperLimitCharacteristic() -> CBCharacteristic? {
+        return systemStats
+    }
+    
+    func getControlStatusCharacteristic() -> CBCharacteristic? {
+        return systemStats
+    }
+    
+    func getBatteryLevelCharacteristic() -> CBCharacteristic? {
+        return systemStats
+    }
+    
+    func getDeviceFirmwareCharacteristic() -> CBCharacteristic? {
+        return systemStats
     }
 }
 
@@ -120,10 +163,9 @@ extension BLEManager: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        getConnectionStatus?("Connected to \(peripheral.name ?? "no deivce").")
-        let ids = [HeaterServices.customService.rawValue, HeaterServices.batteryService.rawValue, HeaterServices.deviceFirmwareUpdateService.rawValue]
-        let servicesUUIDs = getUUIDs(ids)
-        currentPeripheral?.discoverServices(servicesUUIDs)
+        getConnectionStatus?(peripheral.name ?? "No device")
+        let serviceUUIDs = [HeaterServices.customService.getUUID(), HeaterServices.batteryService.getUUID(), HeaterServices.deviceFirmwareUpdateService.getUUID()]
+        currentPeripheral?.discoverServices(serviceUUIDs)
     }
 }
 
@@ -141,50 +183,34 @@ extension BLEManager: CBPeripheralDelegate {
         guard let characteristics = service.characteristics else { return }
         for characteristic in characteristics {
             switch characteristic.uuid {
-            case getUUIDs([HeaterServicesCharacteristics.systemStats.rawValue]).first:
+            case HeaterServicesCharacteristics.systemStats.getUUID():
                 systemStats = characteristic
                 setNotification(true, for: characteristic)
-                if characteristic.properties.contains(.read) {
-                    currentPeripheral?.readValue(for: characteristic)
-                }
-            case getUUIDs([HeaterServicesCharacteristics.initialOnTime.rawValue]).first:
+                readValue(for: characteristic)
+            case HeaterServicesCharacteristics.initialOnTime.getUUID():
                 initialOnTime = characteristic
-                if characteristic.properties.contains(.read) {
-                    currentPeripheral?.readValue(for: characteristic)
-                }
-            case getUUIDs([HeaterServicesCharacteristics.waveOnTime.rawValue]).first:
+                readValue(for: characteristic)
+            case HeaterServicesCharacteristics.waveOnTime.getUUID():
                 waveOnTime = characteristic
-                if characteristic.properties.contains(.read) {
-                    currentPeripheral?.readValue(for: characteristic)
-                }
-            case getUUIDs([HeaterServicesCharacteristics.waveOffTime.rawValue]).first:
+                readValue(for: characteristic)
+            case HeaterServicesCharacteristics.waveOffTime.getUUID():
                 waveOffTime = characteristic
-                if characteristic.properties.contains(.read) {
-                    currentPeripheral?.readValue(for: characteristic)
-                }
-            case getUUIDs([HeaterServicesCharacteristics.waveTimeLimit.rawValue]).first:
+                readValue(for: characteristic)
+            case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
                 waveTimeLimit = characteristic
-                if characteristic.properties.contains(.read) {
-                    currentPeripheral?.readValue(for: characteristic)
-                }
-            case getUUIDs([HeaterServicesCharacteristics.tempUpperLimit.rawValue]).first:
+                readValue(for: characteristic)
+            case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
                 tempUpperLimit = characteristic
-                if characteristic.properties.contains(.read) {
-                    currentPeripheral?.readValue(for: characteristic)
-                }
-            case getUUIDs([HeaterServicesCharacteristics.controlStatus.rawValue]).first:
+                readValue(for: characteristic)
+            case HeaterServicesCharacteristics.controlStatus.getUUID():
                 controlStatus = characteristic
                 setNotification(true, for: characteristic)
-                if characteristic.properties.contains(.read) {
-                    currentPeripheral?.readValue(for: characteristic)
-                }
-            case getUUIDs([HeaterServicesCharacteristics.batteryLevel.rawValue]).first:
+                readValue(for: characteristic)
+            case HeaterServicesCharacteristics.batteryLevel.getUUID():
                 batteryLevel = characteristic
                 setNotification(true, for: characteristic)
-                if characteristic.properties.contains(.read) {
-                    currentPeripheral?.readValue(for: characteristic)
-                }
-            case getUUIDs([HeaterServicesCharacteristics.deviceFirmware.rawValue]).first:
+                readValue(for: characteristic)
+            case HeaterServicesCharacteristics.deviceFirmware.getUUID():
                 deviceFirmware = characteristic
                 setNotification(true, for: characteristic)
                 //read not available
@@ -196,28 +222,28 @@ extension BLEManager: CBPeripheralDelegate {
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         switch characteristic.uuid {
-        case getUUIDs([HeaterServicesCharacteristics.systemStats.rawValue]).first:
+        case HeaterServicesCharacteristics.systemStats.getUUID():
             let temperature = systemStats(from: characteristic)
             delegate?.getInitialSystemStats?(temperature)
-        case getUUIDs([HeaterServicesCharacteristics.initialOnTime.rawValue]).first:
-            let initOnTime = getUInt16Characteristics(from: characteristic)
+        case HeaterServicesCharacteristics.initialOnTime.getUUID():
+            let initOnTime = getUInt16Characteristic(from: characteristic)
             delegate?.getInitialOnTime?(initOnTime)
-        case getUUIDs([HeaterServicesCharacteristics.waveOnTime.rawValue]).first:
-            let waveOn = getUInt16Characteristics(from: characteristic)
+        case HeaterServicesCharacteristics.waveOnTime.getUUID():
+            let waveOn = getUInt16Characteristic(from: characteristic)
             delegate?.getWaveOnTime?(waveOn)
-        case getUUIDs([HeaterServicesCharacteristics.waveOffTime.rawValue]).first:
-            let waveOff = getUInt16Characteristics(from: characteristic)
+        case HeaterServicesCharacteristics.waveOffTime.getUUID():
+            let waveOff = getUInt16Characteristic(from: characteristic)
             delegate?.getWaveOffTime?(waveOff)
-        case getUUIDs([HeaterServicesCharacteristics.waveTimeLimit.rawValue]).first:
-            let waveLimit = getUInt16Characteristics(from: characteristic)
+        case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
+            let waveLimit = getUInt16Characteristic(from: characteristic)
             delegate?.getWaveTimeLimit?(waveLimit)
-        case getUUIDs([HeaterServicesCharacteristics.tempUpperLimit.rawValue]).first:
-            let tempUpper = getUInt8Characteristics(from: characteristic)
+        case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
+            let tempUpper = getUInt8Characteristic(from: characteristic)
             delegate?.getTempUpperLimit?(tempUpper)
-        case getUUIDs([HeaterServicesCharacteristics.controlStatus.rawValue]).first:
-            let status = getUInt8Characteristics(from: characteristic)
+        case HeaterServicesCharacteristics.controlStatus.getUUID():
+            let status = getUInt8Characteristic(from: characteristic)
             delegate?.getControlStatus?(status)
-        case getUUIDs([HeaterServicesCharacteristics.batteryLevel.rawValue]).first:
+        case HeaterServicesCharacteristics.batteryLevel.getUUID():
             let level = batteryLevel(from: characteristic)
             delegate?.getInitialBatteryLevel?(level)
         default:
@@ -228,19 +254,18 @@ extension BLEManager: CBPeripheralDelegate {
 
 extension BLEManager {
     func systemStats(from characteristic: CBCharacteristic) -> Int {
-        guard let characteristicData = characteristic.value
-            else { return 0 }
+        guard let characteristicData = characteristic.value else { return 0 }
         let currentTemperature = CharacteristicReader.readIntValue(data: characteristicData)
         return currentTemperature
     }
     
-    func getUInt8Characteristics(from characteristic: CBCharacteristic) -> UInt8 {
+    func getUInt8Characteristic(from characteristic: CBCharacteristic) -> UInt8 {
         guard let characteristicData = characteristic.value else { return 0 }
         let currentInitialOnTime = CharacteristicReader.readUInt8Value(data: characteristicData)
         return currentInitialOnTime
     }
     
-    func getUInt16Characteristics(from characteristic: CBCharacteristic) -> UInt16 {
+    func getUInt16Characteristic(from characteristic: CBCharacteristic) -> UInt16 {
         guard let characteristicData = characteristic.value else { return 0 }
         let currentInitialOnTime = CharacteristicReader.readUInt16Value(data: characteristicData)
         return currentInitialOnTime
@@ -249,6 +274,6 @@ extension BLEManager {
     func batteryLevel(from characteristic: CBCharacteristic) -> String {
         guard let characteristicData = characteristic.value else { return  "Error" }
         let currentBatteryLevel = CharacteristicReader.readUInt8Value(data: characteristicData)
-        return "Battery Percentage: \(Int(currentBatteryLevel))"
+        return "\(Int(currentBatteryLevel))"
     }
 }
