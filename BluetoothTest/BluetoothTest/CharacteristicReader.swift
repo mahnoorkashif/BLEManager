@@ -18,7 +18,7 @@ struct CharacteristicReader {
         var int32Val : UInt32 = 0
         let stringInt = String.init(data: aData!, encoding: String.Encoding.utf8)!
         for element in stringInt.unicodeScalars {
-            int32Val = element.value              // UInt32
+            int32Val = element.value
         }
         let int = Int(int32Val)
         return int

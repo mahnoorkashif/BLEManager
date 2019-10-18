@@ -10,10 +10,10 @@ import Foundation
 import CoreBluetooth
 
 enum HeaterServices: String {
-    case customService                  = "8c810001-4d6b-4d4c-9e14-cfc7db46018d"
     case batteryService                 = "0x180F"
-    case deviceFirmwareUpdateService    = "8e400001-f315-4f60-9fb8-838830daea50"
     case deviceInformationService       = "0x180A"
+    case customService                  = "8c810001-4d6b-4d4c-9e14-cfc7db46018d"
+    case deviceFirmwareUpdateService    = "8e400001-f315-4f60-9fb8-838830daea50"
     
     func getUUID() -> CBUUID {
         return CBUUID(string: self.rawValue)
@@ -21,6 +21,10 @@ enum HeaterServices: String {
 }
 
 enum HeaterServicesCharacteristics: String {
+    case batteryLevel       = "0x2A19"
+    
+    case deviceFirmware     = "8e400001-f315-4f60-9fb8-838830daea50"
+    
     case waveOnTime         = "8c810006-4d6b-4d4c-9e14-cfc7db46018d"
     case waveOffTime        = "8c810007-4d6b-4d4c-9e14-cfc7db46018d"
     case systemStats        = "8c810003-4d6b-4d4c-9e14-cfc7db46018d"
@@ -29,38 +33,44 @@ enum HeaterServicesCharacteristics: String {
     case initialOnTime      = "8c810005-4d6b-4d4c-9e14-cfc7db46018d"
     case tempUpperLimit     = "8c810004-4d6b-4d4c-9e14-cfc7db46018d"
     
-    case batteryLevel       = "0x2A19"
-    
-    case deviceFirmware     = "8e400001-f315-4f60-9fb8-838830daea50"
-    
     func getUUID() -> CBUUID {
         return CBUUID(string: self.rawValue)
     }
 }
 
-class BLEManager: NSObject {
+class BLEManager: NSObject, BLECommunicationProtocol {
     private var deviceName              : String?
     static let shared                   = BLEManager()
-    weak var delegate                   : BLEDelegate?
+
     private var currentPeripheral       : CBPeripheral?
-    private var centralManager          : CBCentralManager?
-    private var allPeripherals          : [CBPeripheral] = []
+    private(set) var centralManager     : CBCentralManager?
+    private(set) var allPeripherals     : [CBPeripheral]?
     
-    private var waveOnTime              : CBCharacteristic?
-    private var waveOffTime             : CBCharacteristic?
-    private var systemStats             : CBCharacteristic?
-    private var batteryLevel            : CBCharacteristic?
-    private var waveTimeLimit           : CBCharacteristic?
-    private var controlStatus           : CBCharacteristic?
-    private var initialOnTime           : CBCharacteristic?
-    private var deviceFirmware          : CBCharacteristic?
-    private var tempUpperLimit          : CBCharacteristic?
+    private(set) var waveOnTime         : CBCharacteristic?
+    private(set) var waveOffTime        : CBCharacteristic?
+    private(set) var systemStats        : CBCharacteristic?
+    private(set) var batteryLevel       : CBCharacteristic?
+    private(set) var waveTimeLimit      : CBCharacteristic?
+    private(set) var controlStatus      : CBCharacteristic?
+    private(set) var initialOnTime      : CBCharacteristic?
+    private(set) var deviceFirmware     : CBCharacteristic?
+    private(set) var tempUpperLimit     : CBCharacteristic?
+    
+    var waveTimeChanged                 : ((UInt16)->())? = nil
+    var waveOnTimeChanged               : ((UInt16)->())? = nil
+    var waveOffTimeChanged              : ((UInt16)->())? = nil
+    var systemStatsChanged              : ((Int)->())?    = nil
+    var batteryLevelChanged             : ((String)->())? = nil
+    var controlStatusChanged            : ((UInt8)->())?  = nil
+    var initialOnTimeChanged            : ((UInt16)->())? = nil
+    var tempUpperLimitChanged           : ((UInt8)->())?  = nil
     
     var getConnectionStatus             : ((String)->())?
-    var reloadTableView                 : (([CBPeripheral])->())?
+    var addNewPeripheralToList          : (([CBPeripheral])->())?
     
     private override init() {
         super.init()
+        allPeripherals = []
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
 }
@@ -104,81 +114,18 @@ extension BLEManager {
         currentPeripheral = peripheral
         currentPeripheral?.delegate = self
     }
-    
-    func getCurrentPeripheral() -> CBPeripheral? {
-        return currentPeripheral
-    }
-    
-    func getCentralManager() -> CBCentralManager? {
-        return centralManager
-    }
-    
-    func getAllPeripherals() -> [CBPeripheral]? {
-        return allPeripherals
-    }
-    
-    func getSystemStatsCharacteristic() -> CBCharacteristic? {
-        return systemStats
-    }
-    
-    func getInitialOnTimeCharacteristic() -> CBCharacteristic? {
-        return initialOnTime
-    }
-    
-    func getWaveOnTimeCharacteristic() -> CBCharacteristic? {
-        return waveOnTime
-    }
-    
-    func getWaveOffTimeCharacteristic() -> CBCharacteristic? {
-        return waveOffTime
-    }
-    
-    func getWaveTimeLimitCharacteristic() -> CBCharacteristic? {
-        return waveTimeLimit
-    }
-    
-    func getTempUpperLimitCharacteristic() -> CBCharacteristic? {
-        return tempUpperLimit
-    }
-    
-    func getControlStatusCharacteristic() -> CBCharacteristic? {
-        return controlStatus
-    }
-    
-    func getBatteryLevelCharacteristic() -> CBCharacteristic? {
-        return batteryLevel
-    }
-    
-    func getDeviceFirmwareCharacteristic() -> CBCharacteristic? {
-        return deviceFirmware
-    }
 }
 
 extension BLEManager: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        switch central.state {
-        case .unknown:
-            print("central.state is .unknown")
-        case .resetting:
-            print("central.state is .resetting")
-        case .unsupported:
-            print("central.state is .unsupported")
-        case .unauthorized:
-            print("central.state is .unauthorized")
-        case .poweredOff:
-            print("central.state is .poweredOff")
-        case .poweredOn:
-            print("central.state is .poweredOn")
-            centralManager?.scanForPeripherals(withServices: nil)
-        @unknown default:
-            print("central.state is .default")
-        }
+        centralManagerStateUpdated(central)
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if peripheral.name == deviceName && !allPeripherals.contains(peripheral) {
-            allPeripherals.append(peripheral)
-            reloadTableView?(allPeripherals)
+        if peripheral.name == deviceName && allPeripherals?.contains(peripheral) == false {
+            allPeripherals?.append(peripheral)
+            guard let peripherals = allPeripherals else { return}
+            addNewPeripheralToList?(peripherals)
         }
     }
     
@@ -189,7 +136,7 @@ extension BLEManager: CBCentralManagerDelegate {
     }
 }
 
-extension BLEManager: CBPeripheralDelegate {
+extension BLEManager: CBPeripheralDelegate, BLEDataChangeProtocol {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = currentPeripheral?.services else { return }
         for service in services {
@@ -239,84 +186,6 @@ extension BLEManager: CBPeripheralDelegate {
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        switch characteristic.uuid {
-        case HeaterServicesCharacteristics.systemStats.getUUID():
-            let temperature = systemStats(from: characteristic)
-            delegate?.getSystemStats?(temperature)
-        case HeaterServicesCharacteristics.initialOnTime.getUUID():
-            let initOnTime = getUInt16Characteristic(from: characteristic)
-            delegate?.getInitialOnTime?(initOnTime)
-        case HeaterServicesCharacteristics.waveOnTime.getUUID():
-            let waveOn = getUInt16Characteristic(from: characteristic)
-            delegate?.getWaveOnTime?(waveOn)
-        case HeaterServicesCharacteristics.waveOffTime.getUUID():
-            let waveOff = getUInt16Characteristic(from: characteristic)
-            delegate?.getWaveOffTime?(waveOff)
-        case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
-            let waveLimit = getUInt16Characteristic(from: characteristic)
-            delegate?.getWaveTimeLimit?(waveLimit)
-        case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
-            let tempUpper = getUInt8Characteristic(from: characteristic)
-            delegate?.getTempUpperLimit?(tempUpper)
-        case HeaterServicesCharacteristics.controlStatus.getUUID():
-            let status = getUInt8Characteristic(from: characteristic)
-            delegate?.getControlStatus?(status)
-        case HeaterServicesCharacteristics.batteryLevel.getUUID():
-            let level = batteryLevel(from: characteristic)
-            delegate?.getBatteryLevel?(level)
-        default:
-            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
-        }
-    }
-    
-//    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
-//        if let error = error {
-//            print("error occured : \(error.localizedDescription)")
-//        } else {
-//            switch characteristic.uuid {
-//            case HeaterServicesCharacteristics.initialOnTime.getUUID():
-//                readValue(for: characteristic)
-//            case HeaterServicesCharacteristics.waveOnTime.getUUID():
-//                readValue(for: characteristic)
-//            case HeaterServicesCharacteristics.waveOffTime.getUUID():
-//                readValue(for: characteristic)
-//            case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
-//                readValue(for: characteristic)
-//            case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
-//                readValue(for: characteristic)
-//            case HeaterServicesCharacteristics.controlStatus.getUUID():
-//                readValue(for: characteristic)
-//            case HeaterServicesCharacteristics.deviceFirmware.getUUID():
-//                print("Value Written Successfully")
-//            default:
-//                print("Unhandled Characteristic UUID: \(characteristic.uuid)")
-//            }
-//        }
-//    }
-}
-
-extension BLEManager {
-    func systemStats(from characteristic: CBCharacteristic) -> Int {
-        guard let characteristicData = characteristic.value else { return 0 }
-        let currentTemperature = CharacteristicReader.readIntValue(data: characteristicData)
-        return currentTemperature
-    }
-    
-    func getUInt8Characteristic(from characteristic: CBCharacteristic) -> UInt8 {
-        guard let characteristicData = characteristic.value else { return 0 }
-        let currentInitialOnTime = CharacteristicReader.readUInt8Value(data: characteristicData)
-        return currentInitialOnTime
-    }
-    
-    func getUInt16Characteristic(from characteristic: CBCharacteristic) -> UInt16 {
-        guard let characteristicData = characteristic.value else { return 0 }
-        let currentInitialOnTime = CharacteristicReader.readUInt16Value(data: characteristicData)
-        return currentInitialOnTime
-    }
-    
-    func batteryLevel(from characteristic: CBCharacteristic) -> String {
-        guard let characteristicData = characteristic.value else { return  "Error" }
-        let currentBatteryLevel = CharacteristicReader.readUInt8Value(data: characteristicData)
-        return "\(Int(currentBatteryLevel))"
+        characteristicUpdated(characteristic: characteristic)
     }
 }

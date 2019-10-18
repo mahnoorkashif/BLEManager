@@ -34,6 +34,16 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         initManager()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        registerBLEClosures()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        BLEManager.shared.resetListners()
+    }
 }
 
 extension DetailViewController {
@@ -42,8 +52,6 @@ extension DetailViewController {
     }
     
     func initManager() {
-        BLEManager.shared.delegate = self
-
         BLEManager.shared.getConnectionStatus = { [weak self] status in
             self?.connectionStatus.text = "Connected to \(status)."
         }
@@ -55,8 +63,8 @@ extension DetailViewController {
         let number = 10000
         if number >= 1 && number <= 65000 {
             let val = UInt16(number)
-            writeInitalOnTime(val)
-            readInitalOnTime()
+            BLEManager.shared.writeInitalOnTime(val)
+            BLEManager.shared.readInitalOnTime()
         } else { return }
     }
     
@@ -64,8 +72,8 @@ extension DetailViewController {
         let number = 20000
         if number >= 1 && number <= 65000 {
             let val = UInt16(number)
-            writeWaveOnTime(val)
-            readWaveOnTime()
+            BLEManager.shared.writeWaveOnTime(val)
+            BLEManager.shared.readWaveOnTime()
         } else { return }
     }
     
@@ -73,8 +81,8 @@ extension DetailViewController {
         let number = 5000
         if number >= 1 && number <= 65000 {
             let val = UInt16(number)
-            writeWaveOffTime(val)
-            readWaveOffTime()
+            BLEManager.shared.writeWaveOffTime(val)
+            BLEManager.shared.readWaveOffTime()
         } else { return }
     }
     
@@ -82,8 +90,8 @@ extension DetailViewController {
         let number = 6000
         if number >= 60 && number <= 10800 {
             let val = UInt16(number)
-            writeWaveTimeLimit(val)
-            readWaveTimeLimit()
+            BLEManager.shared.writeWaveTimeLimit(val)
+            BLEManager.shared.readWaveTimeLimit()
         } else { return }
     }
     
@@ -91,29 +99,71 @@ extension DetailViewController {
         let number = 38
         if number >= 30 && number <= 43 {
             let val = UInt8(number)
-            writeTempUpperLimit(val)
-            readTempUpperLimit()
+            BLEManager.shared.writeTempUpperLimit(val)
+            BLEManager.shared.readTempUpperLimit()
         } else { return }
     }
     
     @IBAction func changeControlStatus(_ sender: UIButton) {
         switch status {
         case ControlStatusValues.on.rawValue:
-            writeControlStatus(ControlStatusValues.off.rawValue)
+            BLEManager.shared.writeControlStatus(ControlStatusValues.off.rawValue)
         case ControlStatusValues.off.rawValue:
-            writeControlStatus(ControlStatusValues.on.rawValue)
+            BLEManager.shared.writeControlStatus(ControlStatusValues.on.rawValue)
         case ControlStatusValues.onh.rawValue:
-            writeControlStatus(ControlStatusValues.off.rawValue)
+            BLEManager.shared.writeControlStatus(ControlStatusValues.off.rawValue)
         case ControlStatusValues.onn.rawValue:
-            writeControlStatus(ControlStatusValues.off.rawValue)
+            BLEManager.shared.writeControlStatus(ControlStatusValues.off.rawValue)
         default:
             break
         }
-        readControlStatus()
+        BLEManager.shared.readControlStatus()
     }
 }
 
-extension DetailViewController: BLEDelegate {
+extension DetailViewController {
+    func registerBLEClosures() {
+        BLEManager.shared.batteryLevelChanged = { [weak self] (level)  in
+            guard let self = self else { return }
+            self.getBatteryLevel(level)
+        }
+        
+        BLEManager.shared.systemStatsChanged = { [weak self] (stats)  in
+            guard let self = self else { return }
+            self.getSystemStats(stats)
+        }
+        
+        BLEManager.shared.initialOnTimeChanged = { [weak self] (time)  in
+            guard let self = self else { return }
+            self.getInitialOnTime(time)
+        }
+        
+        BLEManager.shared.waveOnTimeChanged = { [weak self] (time)  in
+            guard let self = self else { return }
+            self.getWaveOnTime(time)
+        }
+        
+        BLEManager.shared.waveOffTimeChanged = { [weak self] (time)  in
+            guard let self = self else { return }
+            self.getWaveOffTime(time)
+        }
+        
+        BLEManager.shared.waveTimeChanged = { [weak self] (time)  in
+            guard let self = self else { return }
+            self.getWaveTimeLimit(time)
+        }
+        
+        BLEManager.shared.tempUpperLimitChanged = { [weak self] (limit)  in
+            guard let self = self else { return }
+            self.getTempUpperLimit(limit)
+        }
+        
+        BLEManager.shared.controlStatusChanged = { [weak self] (status)  in
+            guard let self = self else { return }
+            self.getControlStatus(status)
+        }
+    }
+    
     func getSystemStats(_ currentTemperature: Int) {
         temperature.text = "Temperature: \(currentTemperature)"
     }

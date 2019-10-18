@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        disconnectPeripheral()
+        BLEManager.shared.disconnectPeripheral()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -38,10 +38,8 @@ class ViewController: UIViewController {
 
 extension ViewController {
     func initManager() {
-        BLEManager.shared.delegate = self
         BLEManager.shared.setDeviceName(deviceName: "Brilliantly Warm")
-        
-        BLEManager.shared.reloadTableView = { [weak self] allDevices in
+        BLEManager.shared.addNewPeripheralToList = { [weak self] allDevices in
             self?.peripheralDevices = allDevices
             self?.peripheralsTableView.reloadData()
         }
@@ -60,9 +58,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        connectToPeripheral(at: indexPath.row)
+        BLEManager.shared.connectToPeripheral(at: indexPath.row)
         performSegue(withIdentifier: "showPeripheralDetails", sender: nil)
     }
 }
-
-extension ViewController: BLEDelegate {}
