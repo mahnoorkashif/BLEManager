@@ -76,6 +76,12 @@ extension BLEManager {
         }
     }
     
+    func writeValue(_ data: Data, for characteristic: CBCharacteristic, type: CBCharacteristicWriteType) {
+        if characteristic.properties.contains(.write) {
+            currentPeripheral?.writeValue(data, for: characteristic, type: type)
+        }
+    }
+    
     func setNotification(_ enabled: Bool, for characteristic: CBCharacteristic) {
         if characteristic.properties.contains(.notify) {
             currentPeripheral?.setNotifyValue(enabled, for: characteristic)
@@ -91,6 +97,7 @@ extension BLEManager {
         guard let bluetoothPeripheral = currentPeripheral else { return }
         centralManager?.cancelPeripheralConnection(bluetoothPeripheral)
         currentPeripheral = nil
+        print("Disconnected from \(bluetoothPeripheral.name ?? "No name")")
     }
     
     func setCurrentPeripheral(_ peripheral: CBPeripheral) {
@@ -115,35 +122,35 @@ extension BLEManager {
     }
     
     func getInitialOnTimeCharacteristic() -> CBCharacteristic? {
-        return systemStats
+        return initialOnTime
     }
     
     func getWaveOnTimeCharacteristic() -> CBCharacteristic? {
-        return systemStats
+        return waveOnTime
     }
     
     func getWaveOffTimeCharacteristic() -> CBCharacteristic? {
-        return systemStats
+        return waveOffTime
     }
     
     func getWaveTimeLimitCharacteristic() -> CBCharacteristic? {
-        return systemStats
+        return waveTimeLimit
     }
     
     func getTempUpperLimitCharacteristic() -> CBCharacteristic? {
-        return systemStats
+        return tempUpperLimit
     }
     
     func getControlStatusCharacteristic() -> CBCharacteristic? {
-        return systemStats
+        return controlStatus
     }
     
     func getBatteryLevelCharacteristic() -> CBCharacteristic? {
-        return systemStats
+        return batteryLevel
     }
     
     func getDeviceFirmwareCharacteristic() -> CBCharacteristic? {
-        return systemStats
+        return deviceFirmware
     }
 }
 
@@ -235,7 +242,7 @@ extension BLEManager: CBPeripheralDelegate {
         switch characteristic.uuid {
         case HeaterServicesCharacteristics.systemStats.getUUID():
             let temperature = systemStats(from: characteristic)
-            delegate?.getInitialSystemStats?(temperature)
+            delegate?.getSystemStats?(temperature)
         case HeaterServicesCharacteristics.initialOnTime.getUUID():
             let initOnTime = getUInt16Characteristic(from: characteristic)
             delegate?.getInitialOnTime?(initOnTime)
@@ -256,9 +263,18 @@ extension BLEManager: CBPeripheralDelegate {
             delegate?.getControlStatus?(status)
         case HeaterServicesCharacteristics.batteryLevel.getUUID():
             let level = batteryLevel(from: characteristic)
-            delegate?.getInitialBatteryLevel?(level)
+            delegate?.getBatteryLevel?(level)
         default:
             print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+        }
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+        if let error = error {
+            print("error occured : \(error.localizedDescription)")
+        } else {
+            print("Value successfully written")
+            readValue(for: characteristic)
         }
     }
 }

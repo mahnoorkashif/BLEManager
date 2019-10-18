@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        BLEManager.shared.disconnectCurrentPeripheral()
+        disconnectPeripheral()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

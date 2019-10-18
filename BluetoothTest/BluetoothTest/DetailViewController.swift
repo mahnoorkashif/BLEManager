@@ -38,10 +38,15 @@ extension DetailViewController {
             self?.connectionStatus.text = "Connected to \(status)."
         }
     }
+    
+    @IBAction func writeWaveOnTime(_ sender: UIButton) {
+        let val = UInt16(2600)
+        writeWaveOnTime(val)
+    }
 }
 
 extension DetailViewController: BLEDelegate {
-    func getInitialSystemStats(_ currentTemperature: Int) {
+    func getSystemStats(_ currentTemperature: Int) {
         temperature.text = "Temperature: \(currentTemperature)"
     }
     
@@ -69,7 +74,7 @@ extension DetailViewController: BLEDelegate {
         controlStatus.text = "Control Status: \(currentControlStatus)"
     }
     
-    func getInitialBatteryLevel(_ batteryLevel: String) {
+    func getBatteryLevel(_ batteryLevel: String) {
         batteryPercentage.text = "Battery Level: \(batteryLevel)"
     }
 }
