@@ -8,6 +8,14 @@
 
 import UIKit
 
+enum ControlStatusValues: UInt8 {
+    case on     = 0x02
+    case off    = 0x01
+    case onh    = 0x03
+    case onn    = 0x04
+}
+
+
 class DetailViewController: UIViewController {
     
     @IBOutlet weak var waveOnTime           : UILabel!
@@ -19,6 +27,8 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var tempUpperLimit       : UILabel!
     @IBOutlet weak var connectionStatus     : UILabel!
     @IBOutlet weak var batteryPercentage    : UILabel!
+    
+    var status                              : UInt8?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,10 +48,68 @@ extension DetailViewController {
             self?.connectionStatus.text = "Connected to \(status)."
         }
     }
+}
+
+extension DetailViewController {
+    @IBAction func changeInitialOnTime(_ sender: UIButton) {
+        let number = 10000
+        if number >= 1 && number <= 65000 {
+            let val = UInt16(number)
+            writeInitalOnTime(val)
+            readInitalOnTime()
+        } else { return }
+    }
     
-    @IBAction func writeWaveOnTime(_ sender: UIButton) {
-        let val = UInt16(2600)
-        writeWaveOnTime(val)
+    @IBAction func changeWaveOnTime(_ sender: UIButton) {
+        let number = 20000
+        if number >= 1 && number <= 65000 {
+            let val = UInt16(number)
+            writeWaveOnTime(val)
+            readWaveOnTime()
+        } else { return }
+    }
+    
+    @IBAction func changeWaveOffTime(_ sender: UIButton) {
+        let number = 5000
+        if number >= 1 && number <= 65000 {
+            let val = UInt16(number)
+            writeWaveOffTime(val)
+            readWaveOffTime()
+        } else { return }
+    }
+    
+    @IBAction func changeWaveTimeLimit(_ sender: UIButton) {
+        let number = 6000
+        if number >= 60 && number <= 10800 {
+            let val = UInt16(number)
+            writeWaveTimeLimit(val)
+            readWaveTimeLimit()
+        } else { return }
+    }
+    
+    @IBAction func changeTempUpperLimit(_ sender: UIButton) {
+        let number = 38
+        if number >= 30 && number <= 43 {
+            let val = UInt8(number)
+            writeTempUpperLimit(val)
+            readTempUpperLimit()
+        } else { return }
+    }
+    
+    @IBAction func changeControlStatus(_ sender: UIButton) {
+        switch status {
+        case ControlStatusValues.on.rawValue:
+            writeControlStatus(ControlStatusValues.off.rawValue)
+        case ControlStatusValues.off.rawValue:
+            writeControlStatus(ControlStatusValues.on.rawValue)
+        case ControlStatusValues.onh.rawValue:
+            writeControlStatus(ControlStatusValues.off.rawValue)
+        case ControlStatusValues.onn.rawValue:
+            writeControlStatus(ControlStatusValues.off.rawValue)
+        default:
+            break
+        }
+        readControlStatus()
     }
 }
 
@@ -71,7 +139,19 @@ extension DetailViewController: BLEDelegate {
     }
     
     func getControlStatus(_ currentControlStatus: UInt8) {
-        controlStatus.text = "Control Status: \(currentControlStatus)"
+        status = currentControlStatus
+        switch currentControlStatus {
+        case ControlStatusValues.on.rawValue:
+            controlStatus.text = "Control Status: On"
+        case ControlStatusValues.off.rawValue:
+            controlStatus.text = "Control Status: Off"
+        case ControlStatusValues.onh.rawValue:
+            controlStatus.text = "Control Status: On + Heating"
+        case ControlStatusValues.onn.rawValue:
+            controlStatus.text = "Control Status: On + Not Heating"
+        default:
+            break
+        }
     }
     
     func getBatteryLevel(_ batteryLevel: String) {

@@ -31,9 +31,69 @@ extension BLEDelegate {
         BLEManager.shared.disconnectCurrentPeripheral()
     }
     
+    func readInitalOnTime() {
+        guard let initialOnTime = BLEManager.shared.getInitialOnTimeCharacteristic() else { return }
+        BLEManager.shared.readValue(for: initialOnTime)
+    }
+    
+    func readWaveOnTime() {
+        guard let waveOnTime = BLEManager.shared.getWaveOnTimeCharacteristic() else { return }
+        BLEManager.shared.readValue(for: waveOnTime)
+    }
+    
+    func readWaveOffTime() {
+        guard let waveOffTime = BLEManager.shared.getWaveOffTimeCharacteristic() else { return }
+        BLEManager.shared.readValue(for: waveOffTime)
+    }
+    
+    func readWaveTimeLimit() {
+        guard let waveTimeLimit = BLEManager.shared.getWaveTimeLimitCharacteristic() else { return }
+        BLEManager.shared.readValue(for: waveTimeLimit)
+    }
+    
+    func readTempUpperLimit() {
+        guard let tempUpperLimit = BLEManager.shared.getTempUpperLimitCharacteristic() else { return }
+        BLEManager.shared.readValue(for: tempUpperLimit)
+    }
+    
+    func readControlStatus() {
+        guard let controlStatus = BLEManager.shared.getControlStatusCharacteristic() else { return }
+        BLEManager.shared.readValue(for: controlStatus)
+    }
+    
+    func writeInitalOnTime(_ value: UInt16) {
+        guard let initialOnTime = BLEManager.shared.getInitialOnTimeCharacteristic() else { return }
+        let data = DataConverter.getDataFromUInt16(value)
+        BLEManager.shared.writeValue(data, for: initialOnTime, type: .withoutResponse)
+    }
+    
     func writeWaveOnTime(_ value: UInt16) {
         guard let waveOnTime = BLEManager.shared.getWaveOnTimeCharacteristic() else { return }
-        let data = DataConverter.getDataFromUIInt16(value)
-        BLEManager.shared.writeValue(data, for: waveOnTime, type: .withResponse)
+        let data = DataConverter.getDataFromUInt16(value)
+        BLEManager.shared.writeValue(data, for: waveOnTime, type: .withoutResponse)
+    }
+    
+    func writeWaveOffTime(_ value: UInt16) {
+        guard let waveOffTime = BLEManager.shared.getWaveOffTimeCharacteristic() else { return }
+        let data = DataConverter.getDataFromUInt16(value)
+        BLEManager.shared.writeValue(data, for: waveOffTime, type: .withoutResponse)
+    }
+    
+    func writeWaveTimeLimit(_ value: UInt16) {
+        guard let waveTimeLimit = BLEManager.shared.getWaveTimeLimitCharacteristic() else { return }
+        let data = DataConverter.getDataFromUInt16(value)
+        BLEManager.shared.writeValue(data, for: waveTimeLimit, type: .withoutResponse)
+    }
+    
+    func writeTempUpperLimit(_ value: UInt8) {
+        guard let tempUpperLimit = BLEManager.shared.getTempUpperLimitCharacteristic() else { return }
+        let data = DataConverter.getDataFromUInt8(value)
+        BLEManager.shared.writeValue(data, for: tempUpperLimit, type: .withoutResponse)
+    }
+    
+    func writeControlStatus(_ value: UInt8) {
+        guard let controlStatus = BLEManager.shared.getControlStatusCharacteristic() else { return }
+        let data = DataConverter.getDataFromUInt8(value)
+        BLEManager.shared.writeValue(data, for: controlStatus, type: .withoutResponse)
     }
 }

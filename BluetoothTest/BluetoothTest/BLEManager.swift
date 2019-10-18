@@ -233,7 +233,7 @@ extension BLEManager: CBPeripheralDelegate {
                 setNotification(true, for: characteristic)
                 //read not available
             default:
-                break
+                print("Unhandled Characteristic UUID: \(characteristic.uuid)")
             }
         }
     }
@@ -269,14 +269,30 @@ extension BLEManager: CBPeripheralDelegate {
         }
     }
     
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
-        if let error = error {
-            print("error occured : \(error.localizedDescription)")
-        } else {
-            print("Value successfully written")
-            readValue(for: characteristic)
-        }
-    }
+//    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+//        if let error = error {
+//            print("error occured : \(error.localizedDescription)")
+//        } else {
+//            switch characteristic.uuid {
+//            case HeaterServicesCharacteristics.initialOnTime.getUUID():
+//                readValue(for: characteristic)
+//            case HeaterServicesCharacteristics.waveOnTime.getUUID():
+//                readValue(for: characteristic)
+//            case HeaterServicesCharacteristics.waveOffTime.getUUID():
+//                readValue(for: characteristic)
+//            case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
+//                readValue(for: characteristic)
+//            case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
+//                readValue(for: characteristic)
+//            case HeaterServicesCharacteristics.controlStatus.getUUID():
+//                readValue(for: characteristic)
+//            case HeaterServicesCharacteristics.deviceFirmware.getUUID():
+//                print("Value Written Successfully")
+//            default:
+//                print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+//            }
+//        }
+//    }
 }
 
 extension BLEManager {
