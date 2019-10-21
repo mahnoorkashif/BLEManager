@@ -75,8 +75,6 @@ class BLEManager: NSObject, BLECommunicationProtocol {
     private(set) var centralManager     : CBCentralManager?
     private(set) var allPeripherals     : [CBPeripheral]?
     
-    private(set) var characteristics    : [CBCharacteristic]?
-    
     var waveTimeChanged                 : ((UInt16)->())? = nil
     var waveOnTimeChanged               : ((UInt16)->())? = nil
     var waveOffTimeChanged              : ((UInt16)->())? = nil
@@ -95,7 +93,6 @@ class BLEManager: NSObject, BLECommunicationProtocol {
     private override init() {
         super.init()
         allPeripherals = []
-        characteristics = []
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
 }
@@ -174,8 +171,8 @@ extension BLEManager {
     /// - Parameter uuid: uuidString of the characteristic.
     /// - Returns: the actual characteristic.
     func getCharacteristics(with uuid: String) -> CBCharacteristic? {
-        let character = characteristicMap.first(where: {$0.type.getValue() == uuid })
-        return character?.object
+        let characteristic = characteristicMap.first(where: {$0.type.getValue() == uuid })
+        return characteristic?.object
     }
 }
 

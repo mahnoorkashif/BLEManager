@@ -9,8 +9,6 @@
 import UIKit
 import CoreBluetooth
 
-
-
 class ViewController: UIViewController {
 
     @IBOutlet weak var peripheralsTableView : UITableView!

@@ -131,7 +131,6 @@ extension BLEDataChangeProtocol {
     }
 }
 
-
 extension BLEDataChangeProtocol {
     /// Function to convert and read value of characteristics whose data type is Int.
     ///
