@@ -36,6 +36,10 @@ enum HeaterServicesCharacteristics: String {
     func getUUID() -> CBUUID {
         return CBUUID(string: self.rawValue)
     }
+    
+    func getValue() -> String {
+        return self.rawValue
+    }
 }
 
 class BLEManager: NSObject, BLECommunicationProtocol {
@@ -46,15 +50,9 @@ class BLEManager: NSObject, BLECommunicationProtocol {
     private(set) var centralManager     : CBCentralManager?
     private(set) var allPeripherals     : [CBPeripheral]?
     
-    private(set) var waveOnTime         : CBCharacteristic?
-    private(set) var waveOffTime        : CBCharacteristic?
-    private(set) var systemStats        : CBCharacteristic?
-    private(set) var batteryLevel       : CBCharacteristic?
-    private(set) var waveTimeLimit      : CBCharacteristic?
-    private(set) var controlStatus      : CBCharacteristic?
-    private(set) var initialOnTime      : CBCharacteristic?
-    private(set) var deviceFirmware     : CBCharacteristic?
-    private(set) var tempUpperLimit     : CBCharacteristic?
+    private(set) var characteristics    : [CBCharacteristic]?
+    
+    private var characteristicMap  : [(type: HeaterServicesCharacteristics, object: CBCharacteristic?)] = []
     
     var waveTimeChanged                 : ((UInt16)->())? = nil
     var waveOnTimeChanged               : ((UInt16)->())? = nil
@@ -68,9 +66,11 @@ class BLEManager: NSObject, BLECommunicationProtocol {
     var getConnectionStatus             : ((String)->())?
     var addNewPeripheralToList          : (([CBPeripheral])->())?
     
+    
     private override init() {
         super.init()
         allPeripherals = []
+        characteristics = []
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
 }
@@ -112,6 +112,15 @@ extension BLEManager {
         currentPeripheral = peripheral
         currentPeripheral?.delegate = self
     }
+    
+    func setCharacteristics(_ type: HeaterServicesCharacteristics, _ characteristic: CBCharacteristic) {
+        characteristicMap.append((type, characteristic))
+    }
+    
+    func getCharacteristics(with uuid: String) -> CBCharacteristic? {
+        let character = characteristicMap.first(where: {$0.type.getValue() == uuid })
+        return character?.object
+    }
 }
 
 extension BLEManager: CBCentralManagerDelegate {
@@ -150,45 +159,11 @@ extension BLEManager: CBPeripheralDelegate, BLEDataChangeProtocol {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         guard let characteristics = service.characteristics else { return }
         for characteristic in characteristics {
-            switch characteristic.uuid {
-            case HeaterServicesCharacteristics.systemStats.getUUID():
-                systemStats = characteristic
-                setNotification(true, for: characteristic)
-                readValue(for: characteristic)
-            case HeaterServicesCharacteristics.initialOnTime.getUUID():
-                initialOnTime = characteristic
-                readValue(for: characteristic)
-            case HeaterServicesCharacteristics.waveOnTime.getUUID():
-                waveOnTime = characteristic
-                readValue(for: characteristic)
-            case HeaterServicesCharacteristics.waveOffTime.getUUID():
-                waveOffTime = characteristic
-                readValue(for: characteristic)
-            case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
-                waveTimeLimit = characteristic
-                readValue(for: characteristic)
-            case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
-                tempUpperLimit = characteristic
-                readValue(for: characteristic)
-            case HeaterServicesCharacteristics.controlStatus.getUUID():
-                controlStatus = characteristic
-                setNotification(true, for: characteristic)
-                readValue(for: characteristic)
-            case HeaterServicesCharacteristics.batteryLevel.getUUID():
-                batteryLevel = characteristic
-                setNotification(true, for: characteristic)
-                readValue(for: characteristic)
-            case HeaterServicesCharacteristics.deviceFirmware.getUUID():
-                deviceFirmware = characteristic
-                setNotification(true, for: characteristic)
-                //read not available
-            default:
-                print("Unhandled Characteristic UUID: \(characteristic.uuid)")
-            }
+            characteristicsDiscovered(for: characteristic)
         }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        characteristicUpdated(characteristic: characteristic)
+        characteristicUpdated(for: characteristic)
     }
 }

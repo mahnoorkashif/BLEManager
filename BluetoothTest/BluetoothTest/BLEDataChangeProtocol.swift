@@ -41,7 +41,7 @@ extension BLEDataChangeProtocol {
         }
     }
     
-    func characteristicUpdated(characteristic: CBCharacteristic) {
+    func characteristicUpdated(for characteristic: CBCharacteristic) {
         switch characteristic.uuid {
         case HeaterServicesCharacteristics.batteryLevel.getUUID():
             let level = batteryLevel(from: characteristic)
@@ -67,6 +67,44 @@ extension BLEDataChangeProtocol {
         case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
             let limit = getUInt8Characteristic(from: characteristic)
             tempUpperLimitChanged?(limit)
+        default:
+            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+        }
+    }
+    
+    func characteristicsDiscovered(for characteristic: CBCharacteristic) {
+        switch characteristic.uuid {
+        case HeaterServicesCharacteristics.systemStats.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.systemStats, characteristic)
+            BLEManager.shared.setNotification(true, for: characteristic)
+            BLEManager.shared.readValue(for: characteristic)
+        case HeaterServicesCharacteristics.initialOnTime.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.initialOnTime, characteristic)
+            BLEManager.shared.readValue(for: characteristic)
+        case HeaterServicesCharacteristics.waveOnTime.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveOnTime, characteristic)
+            BLEManager.shared.readValue(for: characteristic)
+        case HeaterServicesCharacteristics.waveOffTime.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveOffTime, characteristic)
+            BLEManager.shared.readValue(for: characteristic)
+        case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveTimeLimit, characteristic)
+            BLEManager.shared.readValue(for: characteristic)
+        case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.tempUpperLimit, characteristic)
+            BLEManager.shared.readValue(for: characteristic)
+        case HeaterServicesCharacteristics.controlStatus.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.controlStatus, characteristic)
+            BLEManager.shared.setNotification(true, for: characteristic)
+            BLEManager.shared.readValue(for: characteristic)
+        case HeaterServicesCharacteristics.batteryLevel.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.batteryLevel, characteristic)
+            BLEManager.shared.setNotification(true, for: characteristic)
+            BLEManager.shared.readValue(for: characteristic)
+        case HeaterServicesCharacteristics.deviceFirmware.getUUID():
+            BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.deviceFirmware, characteristic)
+            BLEManager.shared.setNotification(true, for: characteristic)
+        //read not available
         default:
             print("Unhandled Characteristic UUID: \(characteristic.uuid)")
         }
