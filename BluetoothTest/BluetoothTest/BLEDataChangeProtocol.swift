@@ -21,6 +21,9 @@ protocol BLEDataChangeProtocol  : class {
 }
 
 extension BLEDataChangeProtocol {
+    /// Function to check the state of central manager i.e. the status of phone bluetooth.
+    ///
+    /// - Parameter central: the central manager
     func centralManagerStateUpdated(_ central: CBCentralManager) {
         switch central.state {
         case .unknown:
@@ -41,11 +44,14 @@ extension BLEDataChangeProtocol {
         }
     }
     
+    /// Function to read the updated or current value of the characteristic.
+    ///
+    /// - Parameter characteristic: the characteristic.
     func characteristicUpdated(for characteristic: CBCharacteristic) {
         switch characteristic.uuid {
         case HeaterServicesCharacteristics.batteryLevel.getUUID():
-            let level = batteryLevel(from: characteristic)
-            batteryLevelChanged?(level)
+            let level = getUInt8Characteristic(from: characteristic)
+            batteryLevelChanged?(String(level))
         case HeaterServicesCharacteristics.waveOnTime.getUUID():
             let time = getUInt16Characteristic(from: characteristic)
             waveOnTimeChanged?(time)
@@ -53,7 +59,7 @@ extension BLEDataChangeProtocol {
             let time = getUInt16Characteristic(from: characteristic)
             waveOffTimeChanged?(time)
         case HeaterServicesCharacteristics.systemStats.getUUID():
-            let temperature = systemStats(from: characteristic)
+            let temperature = getIntCharacteristic(from: characteristic)
             systemStatsChanged?(temperature)
         case HeaterServicesCharacteristics.controlStatus.getUUID():
             let status = getUInt8Characteristic(from: characteristic)
@@ -72,6 +78,9 @@ extension BLEDataChangeProtocol {
         }
     }
     
+    /// Function to store characteristic reference when discovered, setting its notification property true if they contain it and read its value.
+    ///
+    /// - Parameter characteristic: the characteristic.
     func characteristicsDiscovered(for characteristic: CBCharacteristic) {
         switch characteristic.uuid {
         case HeaterServicesCharacteristics.systemStats.getUUID():
@@ -104,12 +113,12 @@ extension BLEDataChangeProtocol {
         case HeaterServicesCharacteristics.deviceFirmware.getUUID():
             BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.deviceFirmware, characteristic)
             BLEManager.shared.setNotification(true, for: characteristic)
-        //read not available
         default:
             print("Unhandled Characteristic UUID: \(characteristic.uuid)")
         }
     }
     
+    /// Function to reset Characteristic Listeners.
     func resetListners() {
         waveTimeChanged       = nil
         waveOnTimeChanged     = nil
@@ -124,27 +133,33 @@ extension BLEDataChangeProtocol {
 
 
 extension BLEDataChangeProtocol {
-    func systemStats(from characteristic: CBCharacteristic) -> Int {
+    /// Function to convert and read value of characteristics whose data type is Int.
+    ///
+    /// - Parameter characteristic: the characteristics.
+    /// - Returns: value of the characteristic.
+    func getIntCharacteristic(from characteristic: CBCharacteristic) -> Int {
         guard let characteristicData = characteristic.value else { return 0 }
         let currentTemperature = CharacteristicReader.readIntValue(data: characteristicData)
         return currentTemperature
     }
     
+    /// Function to convert and read value of characteristics whose data type is UInt8.
+    ///
+    /// - Parameter characteristic: the characteristic.
+    /// - Returns: value of the characteristic.
     func getUInt8Characteristic(from characteristic: CBCharacteristic) -> UInt8 {
         guard let characteristicData = characteristic.value else { return 0 }
         let currentInitialOnTime = CharacteristicReader.readUInt8Value(data: characteristicData)
         return currentInitialOnTime
     }
     
+    /// Function to convert and read value of characteristics whose data type is UInt6.
+    ///
+    /// - Parameter characteristic: the characteristic.
+    /// - Returns: value of the characteristic.
     func getUInt16Characteristic(from characteristic: CBCharacteristic) -> UInt16 {
         guard let characteristicData = characteristic.value else { return 0 }
         let currentInitialOnTime = CharacteristicReader.readUInt16Value(data: characteristicData)
         return currentInitialOnTime
-    }
-    
-    func batteryLevel(from characteristic: CBCharacteristic) -> String {
-        guard let characteristicData = characteristic.value else { return  "Error" }
-        let currentBatteryLevel = CharacteristicReader.readUInt8Value(data: characteristicData)
-        return "\(Int(currentBatteryLevel))"
     }
 }
