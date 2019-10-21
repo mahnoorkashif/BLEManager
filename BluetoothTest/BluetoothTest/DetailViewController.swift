@@ -15,7 +15,6 @@ enum ControlStatusValues: UInt8 {
     case onn    = 0x04
 }
 
-
 class DetailViewController: UIViewController {
     
     @IBOutlet weak var waveOnTime           : UILabel!
@@ -42,6 +41,7 @@ class DetailViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        BLEManager.shared.disconnectPeripheral()
         BLEManager.shared.resetListners()
     }
 }
@@ -60,7 +60,7 @@ extension DetailViewController {
 
 extension DetailViewController {
     @IBAction func changeInitialOnTime(_ sender: UIButton) {
-        let number = 10000
+        let number = Int.random(in: 1...65000)
         if number >= 1 && number <= 65000 {
             let val = UInt16(number)
             BLEManager.shared.writeInitalOnTime(val)
@@ -69,7 +69,7 @@ extension DetailViewController {
     }
     
     @IBAction func changeWaveOnTime(_ sender: UIButton) {
-        let number = 20000
+        let number = Int.random(in: 1...65000)
         if number >= 1 && number <= 65000 {
             let val = UInt16(number)
             BLEManager.shared.writeWaveOnTime(val)
@@ -78,7 +78,7 @@ extension DetailViewController {
     }
     
     @IBAction func changeWaveOffTime(_ sender: UIButton) {
-        let number = 5000
+        let number = Int.random(in: 1...65000)
         if number >= 1 && number <= 65000 {
             let val = UInt16(number)
             BLEManager.shared.writeWaveOffTime(val)
@@ -87,7 +87,7 @@ extension DetailViewController {
     }
     
     @IBAction func changeWaveTimeLimit(_ sender: UIButton) {
-        let number = 6000
+        let number = Int.random(in: 60...10800)
         if number >= 60 && number <= 10800 {
             let val = UInt16(number)
             BLEManager.shared.writeWaveTimeLimit(val)
@@ -96,7 +96,7 @@ extension DetailViewController {
     }
     
     @IBAction func changeTempUpperLimit(_ sender: UIButton) {
-        let number = 38
+        let number = Int.random(in: 30...43)
         if number >= 30 && number <= 43 {
             let val = UInt8(number)
             BLEManager.shared.writeTempUpperLimit(val)

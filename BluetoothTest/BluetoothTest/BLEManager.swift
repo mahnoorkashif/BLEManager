@@ -106,8 +106,6 @@ extension BLEManager {
     func disconnectCurrentPeripheral() {
         guard let bluetoothPeripheral = currentPeripheral else { return }
         centralManager?.cancelPeripheralConnection(bluetoothPeripheral)
-        currentPeripheral = nil
-        print("Disconnected from \(bluetoothPeripheral.name ?? "No name")")
     }
     
     func setCurrentPeripheral(_ peripheral: CBPeripheral) {
@@ -133,6 +131,11 @@ extension BLEManager: CBCentralManagerDelegate {
         getConnectionStatus?(peripheral.name ?? "No device")
         let serviceUUIDs = [HeaterServices.customService.getUUID(), HeaterServices.batteryService.getUUID(), HeaterServices.deviceFirmwareUpdateService.getUUID()]
         currentPeripheral?.discoverServices(serviceUUIDs)
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        currentPeripheral = nil
+        print("Disconnected from \(deviceName ?? "No name")")
     }
 }
 
