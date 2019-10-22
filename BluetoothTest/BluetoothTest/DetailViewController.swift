@@ -61,47 +61,37 @@ extension DetailViewController {
 extension DetailViewController {
     @IBAction func changeInitialOnTime(_ sender: UIButton) {
         let number = Int.random(in: 1...65000)
-        if number >= 1 && number <= 65000 {
-            let val = UInt16(number)
-            BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.initialOnTime, val)
-            BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.initialOnTime)
-        } else { return }
+        let val = UInt16(number)
+        BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.initialOnTime, val)
+        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.initialOnTime)
     }
     
     @IBAction func changeWaveOnTime(_ sender: UIButton) {
         let number = Int.random(in: 1...65000)
-        if number >= 1 && number <= 65000 {
-            let val = UInt16(number)
-            BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveOnTime, val)
-            BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveOnTime)
-        } else { return }
+        let val = UInt16(number)
+        BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveOnTime, val)
+        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveOnTime)
     }
     
     @IBAction func changeWaveOffTime(_ sender: UIButton) {
         let number = Int.random(in: 1...65000)
-        if number >= 1 && number <= 65000 {
-            let val = UInt16(number)
-            BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveOffTime, val)
-            BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveOffTime)
-        } else { return }
+        let val = UInt16(number)
+        BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveOffTime, val)
+        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveOffTime)
     }
     
     @IBAction func changeWaveTimeLimit(_ sender: UIButton) {
         let number = Int.random(in: 60...10800)
-        if number >= 60 && number <= 10800 {
-            let val = UInt16(number)
-            BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveTimeLimit, val)
-            BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveTimeLimit)
-        } else { return }
+        let val = UInt16(number)
+        BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveTimeLimit, val)
+        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveTimeLimit)
     }
     
     @IBAction func changeTempUpperLimit(_ sender: UIButton) {
         let number = Int.random(in: 30...43)
-        if number >= 30 && number <= 43 {
-            let val = UInt8(number)
-            BLEManager.shared.writeUInt8Value(HeaterServicesCharacteristics.tempUpperLimit, val)
-            BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.tempUpperLimit)
-        } else { return }
+        let val = UInt8(number)
+        BLEManager.shared.writeUInt8Value(HeaterServicesCharacteristics.tempUpperLimit, val)
+        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.tempUpperLimit)
     }
     
     @IBAction func changeControlStatus(_ sender: UIButton) {
