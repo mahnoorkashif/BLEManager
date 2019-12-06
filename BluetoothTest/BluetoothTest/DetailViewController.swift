@@ -60,50 +60,45 @@ extension DetailViewController {
 
 extension DetailViewController {
     @IBAction func changeInitialOnTime(_ sender: UIButton) {
-        let number = Int.random(in: 1...65000)
-        let val = UInt16(number)
-        BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.initialOnTime, val)
+        let value = Int.random(in: 1...65000)
+        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.initialOnTime, value)
         BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.initialOnTime)
     }
     
     @IBAction func changeWaveOnTime(_ sender: UIButton) {
-        let number = Int.random(in: 1...65000)
-        let val = UInt16(number)
-        BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveOnTime, val)
+        let value = Int.random(in: 1...65000)
+        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.waveOnTime, value)
         BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveOnTime)
     }
     
     @IBAction func changeWaveOffTime(_ sender: UIButton) {
-        let number = Int.random(in: 1...65000)
-        let val = UInt16(number)
-        BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveOffTime, val)
+        let value = Int.random(in: 1...65000)
+        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.waveOffTime, value)
         BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveOffTime)
     }
     
     @IBAction func changeWaveTimeLimit(_ sender: UIButton) {
-        let number = Int.random(in: 60...10800)
-        let val = UInt16(number)
-        BLEManager.shared.writeUInt16Value(HeaterServicesCharacteristics.waveTimeLimit, val)
+        let value = Int.random(in: 60...10800)
+        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.waveTimeLimit, value)
         BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveTimeLimit)
     }
     
     @IBAction func changeTempUpperLimit(_ sender: UIButton) {
-        let number = Int.random(in: 30...43)
-        let val = UInt8(number)
-        BLEManager.shared.writeUInt8Value(HeaterServicesCharacteristics.tempUpperLimit, val)
+        let value = Int.random(in: 30...43)
+        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.tempUpperLimit, value)
         BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.tempUpperLimit)
     }
     
     @IBAction func changeControlStatus(_ sender: UIButton) {
         switch status {
         case ControlStatusValues.on.rawValue:
-            BLEManager.shared.writeUInt8Value(HeaterServicesCharacteristics.controlStatus, ControlStatusValues.off.rawValue)
+            BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.controlStatus, 1)
         case ControlStatusValues.off.rawValue:
-            BLEManager.shared.writeUInt8Value(HeaterServicesCharacteristics.controlStatus, ControlStatusValues.on.rawValue)
+            BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.controlStatus, 2)
         case ControlStatusValues.onh.rawValue:
-            BLEManager.shared.writeUInt8Value(HeaterServicesCharacteristics.controlStatus, ControlStatusValues.off.rawValue)
+            BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.controlStatus, 1)
         case ControlStatusValues.onn.rawValue:
-            BLEManager.shared.writeUInt8Value(HeaterServicesCharacteristics.controlStatus, ControlStatusValues.off.rawValue)
+            BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.controlStatus, 1)
         default:
             break
         }

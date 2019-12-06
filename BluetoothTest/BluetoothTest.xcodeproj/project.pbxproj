@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A0F575F23992FE5004A9D30 /* CharacteristicWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0F575E23992FE5004A9D30 /* CharacteristicWriter.swift */; };
 		4A27A0DA2355AF9C00032487 /* CharacteristicReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A27A0D92355AF9C00032487 /* CharacteristicReader.swift */; };
 		4A27A0DC2355B91800032487 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A27A0DB2355B91800032487 /* BLEManager.swift */; };
 		4A4B1B3A2359B4FC00F39291 /* DataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4B1B392359B4FC00F39291 /* DataConverter.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4A0F575E23992FE5004A9D30 /* CharacteristicWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicWriter.swift; sourceTree = "<group>"; };
 		4A27A0D92355AF9C00032487 /* CharacteristicReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicReader.swift; sourceTree = "<group>"; };
 		4A27A0DB2355B91800032487 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		4A4B1B392359B4FC00F39291 /* DataConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataConverter.swift; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 				4A83E99823584565006C9A58 /* BLEDataChangeProtocol.swift */,
 				4A4B1B3B235A100800F39291 /* BLECommunicationProtocol.swift */,
 				4A27A0D92355AF9C00032487 /* CharacteristicReader.swift */,
+				4A0F575E23992FE5004A9D30 /* CharacteristicWriter.swift */,
 				4A4B1B392359B4FC00F39291 /* DataConverter.swift */,
 				4AF70C422354ABBE00D1D1C0 /* Main.storyboard */,
 				4AF70C472354ABBF00D1D1C0 /* LaunchScreen.storyboard */,
@@ -159,6 +162,7 @@
 				4A83E99923584565006C9A58 /* BLEDataChangeProtocol.swift in Sources */,
 				4A4B1B3C235A100800F39291 /* BLECommunicationProtocol.swift in Sources */,
 				4A83E99B2358833B006C9A58 /* DetailViewController.swift in Sources */,
+				4A0F575F23992FE5004A9D30 /* CharacteristicWriter.swift in Sources */,
 				4AF70C3F2354ABBE00D1D1C0 /* AppDelegate.swift in Sources */,
 				4A27A0DA2355AF9C00032487 /* CharacteristicReader.swift in Sources */,
 			);
