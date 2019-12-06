@@ -36,29 +36,6 @@ extension BLECommunicationProtocol where Self: BLEManager {
     }
     
     func writeCharacteristicValue(_ characteristic: HeaterServicesCharacteristics, _ value: Int) {
-//        guard let characteristicValue = BLEManager.shared.getCharacteristics(with: characteristic.getValue()) else { return }
         CharacteristicWriter.writeCharacteristic(characteristic, value)
     }
-    
-    /// Fucntion to write value of a characteristic whose datatype is UInt8
-    ///
-    /// - Parameters:
-    ///   - characteristic: uuid string of the characteristic.
-    ///   - value: value to write
-    func writeUInt8Value(_ characteristic: HeaterServicesCharacteristics, _ value: UInt8) {
-        guard let characteristic = BLEManager.shared.getCharacteristics(with: characteristic.getValue()) else { return }
-        let data = DataConverter.getDataFromUInt8(value)
-        BLEManager.shared.writeValue(data, for: characteristic, type: .withoutResponse)
-    }
-//
-//    /// Fucntion to write value of a characteristic whose datatype is UInt16
-//    ///
-//    /// - Parameters:
-//    ///   - characteristic: uuid string of the characteristic.
-//    ///   - value: value to write
-//    func writeUInt16Value(_ characteristic: HeaterServicesCharacteristics, _ value: UInt16) {
-//        guard let characteristic = BLEManager.shared.getCharacteristics(with: characteristic.getValue()) else { return }
-//        let data = DataConverter.getDataFromUInt16(value)
-//        BLEManager.shared.writeValue(data, for: characteristic, type: .withoutResponse)
-//    }
 }
