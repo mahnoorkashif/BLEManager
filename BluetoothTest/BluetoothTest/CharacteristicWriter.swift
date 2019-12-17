@@ -31,8 +31,6 @@ struct CharacteristicWriter {
             writeUInt16Value(characteristicValue, UInt16(value))
         case .tempUpperLimit:
             writeUInt8Value(characteristicValue, UInt8(value))
-        default:
-            break
         }
     }
     
