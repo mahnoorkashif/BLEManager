@@ -49,6 +49,58 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A5EB65123A8C1CC00492339 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				4AF70C402354ABBE00D1D1C0 /* ViewController.swift */,
+				4A83E99A2358833B006C9A58 /* DetailViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		4A5EB65223A8C1DD00492339 /* Bluetooth Manager */ = {
+			isa = PBXGroup;
+			children = (
+				4A27A0DB2355B91800032487 /* BLEManager.swift */,
+			);
+			path = "Bluetooth Manager";
+			sourceTree = "<group>";
+		};
+		4A5EB65323A8C1FB00492339 /* Bluetooth Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				4A4B1B3B235A100800F39291 /* BLECommunicationProtocol.swift */,
+			);
+			path = "Bluetooth Protocols";
+			sourceTree = "<group>";
+		};
+		4A5EB65423A8C20900492339 /* Data Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				4A27A0D92355AF9C00032487 /* CharacteristicReader.swift */,
+				4A0F575E23992FE5004A9D30 /* CharacteristicWriter.swift */,
+				4A4B1B392359B4FC00F39291 /* DataConverter.swift */,
+			);
+			path = "Data Handlers";
+			sourceTree = "<group>";
+		};
+		4A5EB65523A8C22900492339 /* Story Boards */ = {
+			isa = PBXGroup;
+			children = (
+				4AF70C422354ABBE00D1D1C0 /* Main.storyboard */,
+				4AF70C472354ABBF00D1D1C0 /* LaunchScreen.storyboard */,
+			);
+			path = "Story Boards";
+			sourceTree = "<group>";
+		};
+		4A5EB65623A8C25000492339 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4A5EB64F23A8BB0A00492339 /* ServicesAndCharacteristics.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		4AF70C322354ABBE00D1D1C0 = {
 			isa = PBXGroup;
 			children = (
@@ -69,16 +121,12 @@
 			isa = PBXGroup;
 			children = (
 				4AF70C3E2354ABBE00D1D1C0 /* AppDelegate.swift */,
-				4AF70C402354ABBE00D1D1C0 /* ViewController.swift */,
-				4A83E99A2358833B006C9A58 /* DetailViewController.swift */,
-				4A27A0DB2355B91800032487 /* BLEManager.swift */,
-				4A4B1B3B235A100800F39291 /* BLECommunicationProtocol.swift */,
-				4A27A0D92355AF9C00032487 /* CharacteristicReader.swift */,
-				4A0F575E23992FE5004A9D30 /* CharacteristicWriter.swift */,
-				4A4B1B392359B4FC00F39291 /* DataConverter.swift */,
-				4A5EB64F23A8BB0A00492339 /* ServicesAndCharacteristics.swift */,
-				4AF70C422354ABBE00D1D1C0 /* Main.storyboard */,
-				4AF70C472354ABBF00D1D1C0 /* LaunchScreen.storyboard */,
+				4A5EB65223A8C1DD00492339 /* Bluetooth Manager */,
+				4A5EB65323A8C1FB00492339 /* Bluetooth Protocols */,
+				4A5EB65423A8C20900492339 /* Data Handlers */,
+				4A5EB65623A8C25000492339 /* Models */,
+				4A5EB65523A8C22900492339 /* Story Boards */,
+				4A5EB65123A8C1CC00492339 /* View Controllers */,
 				4AF70C452354ABBF00D1D1C0 /* Assets.xcassets */,
 				4AF70C4A2354ABBF00D1D1C0 /* Info.plist */,
 			);

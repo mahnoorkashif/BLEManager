@@ -8,13 +8,6 @@
 
 import UIKit
 
-enum ControlStatusValues: UInt8 {
-    case on     = 0x02
-    case off    = 0x01
-    case onh    = 0x03
-    case onn    = 0x04
-}
-
 class DetailViewController: UIViewController {
     
     @IBOutlet weak var waveOnTime           : UILabel!
