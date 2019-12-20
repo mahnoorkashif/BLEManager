@@ -29,7 +29,7 @@ class DetailViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        registerBLEClosures()
+        registerDataManagerClosures()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -54,53 +54,53 @@ extension DetailViewController {
 extension DetailViewController {
     @IBAction func changeInitialOnTime(_ sender: UIButton) {
         let value = Int.random(in: 1...65000)
-        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.initialOnTime, value)
-        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.initialOnTime)
+        CharacteristicHandler.writeCharacteristic(.initialOnTime, value)
+        BLEManager.shared.readValue(for: .initialOnTime)
     }
     
     @IBAction func changeWaveOnTime(_ sender: UIButton) {
         let value = Int.random(in: 1...65000)
-        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.waveOnTime, value)
-        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.waveOnTime)
+        CharacteristicHandler.writeCharacteristic(.waveOnTime, value)
+        BLEManager.shared.readValue(for: .waveOnTime)
     }
     
     @IBAction func changeWaveOffTime(_ sender: UIButton) {
         let value = Int.random(in: 1...65000)
-        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.waveOffTime, value)
-        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.waveOffTime)
+        CharacteristicHandler.writeCharacteristic(.waveOffTime, value)
+        BLEManager.shared.readValue(for: .waveOffTime)
     }
     
     @IBAction func changeWaveTimeLimit(_ sender: UIButton) {
         let value = Int.random(in: 60...10800)
-        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.waveTimeLimit, value)
-        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.waveTimeLimit)
+        CharacteristicHandler.writeCharacteristic(.waveTimeLimit, value)
+        BLEManager.shared.readValue(for: .waveTimeLimit)
     }
     
     @IBAction func changeTempUpperLimit(_ sender: UIButton) {
         let value = Int.random(in: 30...43)
-        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.tempUpperLimit, value)
-        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.tempUpperLimit)
+        CharacteristicHandler.writeCharacteristic(.tempUpperLimit, value)
+        BLEManager.shared.readValue(for: .tempUpperLimit)
     }
     
     @IBAction func changeControlStatus(_ sender: UIButton) {
         switch status {
         case ControlStatusValues.on.rawValue:
-            CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.controlStatus, 1)
+            CharacteristicHandler.writeCharacteristic(.controlStatus, 1)
         case ControlStatusValues.off.rawValue:
-            CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.controlStatus, 2)
+            CharacteristicHandler.writeCharacteristic(.controlStatus, 2)
         case ControlStatusValues.onh.rawValue:
-            CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.controlStatus, 1)
+            CharacteristicHandler.writeCharacteristic(.controlStatus, 1)
         case ControlStatusValues.onn.rawValue:
-            CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.controlStatus, 1)
+            CharacteristicHandler.writeCharacteristic(.controlStatus, 1)
         default:
             break
         }
-        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.controlStatus)
+        BLEManager.shared.readValue(for: .controlStatus)
     }
 }
 
 extension DetailViewController {
-    func registerBLEClosures() {
+    func registerDataManagerClosures() {
         DataManager.shared.batteryLevelChanged = { [weak self] (level)  in
             guard let self = self else { return }
             self.getBatteryLevel(level)

@@ -29,6 +29,7 @@ class BLEManager: NSObject {
         allPeripherals = []
         centralManager = CBCentralManager(delegate: self, queue: nil)
     }
+
 }
 
 extension BLEManager {

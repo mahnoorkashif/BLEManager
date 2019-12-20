@@ -17,26 +17,26 @@ class CustomServiceHandler {
         for characteristic in characteristics {
             switch characteristic.uuid {
             case HeaterServicesCharacteristics.systemStats.getUUID():
-                setCharacteristics(HeaterServicesCharacteristics.systemStats, characteristic)
+                setCharacteristics(.systemStats, characteristic)
                 setNotification(true, for: characteristic)
                 readValue(for: characteristic)
             case HeaterServicesCharacteristics.initialOnTime.getUUID():
-                setCharacteristics(HeaterServicesCharacteristics.initialOnTime, characteristic)
+                setCharacteristics(.initialOnTime, characteristic)
                 readValue(for: characteristic)
             case HeaterServicesCharacteristics.waveOnTime.getUUID():
-                setCharacteristics(HeaterServicesCharacteristics.waveOnTime, characteristic)
+                setCharacteristics(.waveOnTime, characteristic)
                 readValue(for: characteristic)
             case HeaterServicesCharacteristics.waveOffTime.getUUID():
-                setCharacteristics(HeaterServicesCharacteristics.waveOffTime, characteristic)
+                setCharacteristics(.waveOffTime, characteristic)
                 readValue(for: characteristic)
             case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
-                setCharacteristics(HeaterServicesCharacteristics.waveTimeLimit, characteristic)
+                setCharacteristics(.waveTimeLimit, characteristic)
                 readValue(for: characteristic)
             case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
-                setCharacteristics(HeaterServicesCharacteristics.tempUpperLimit, characteristic)
+                setCharacteristics(.tempUpperLimit, characteristic)
                 readValue(for: characteristic)
             case HeaterServicesCharacteristics.controlStatus.getUUID():
-                setCharacteristics(HeaterServicesCharacteristics.controlStatus, characteristic)
+                setCharacteristics(.controlStatus, characteristic)
                 setNotification(true, for: characteristic)
                 readValue(for: characteristic)
             default:

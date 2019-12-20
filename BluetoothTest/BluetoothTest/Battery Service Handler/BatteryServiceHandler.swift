@@ -17,7 +17,7 @@ class BatteryServiceHandler {
         for characteristic in characteristics {
             switch characteristic.uuid {
             case HeaterServicesCharacteristics.batteryLevel.getUUID():
-                setCharacteristics(HeaterServicesCharacteristics.batteryLevel, characteristic)
+                setCharacteristics(.batteryLevel, characteristic)
                 setNotification(true, for: characteristic)
                 readValue(for: characteristic)
             default:
