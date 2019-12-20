@@ -34,8 +34,8 @@ class DetailViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        BLEManager.shared.disconnectPeripheral()
-        BLEManager.shared.resetListners()
+        BLEManager.shared.disconnectCurrentPeripheral()
+        DataManager.shared.resetListners()
     }
 }
 
@@ -54,89 +54,89 @@ extension DetailViewController {
 extension DetailViewController {
     @IBAction func changeInitialOnTime(_ sender: UIButton) {
         let value = Int.random(in: 1...65000)
-        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.initialOnTime, value)
-        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.initialOnTime)
+        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.initialOnTime, value)
+        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.initialOnTime)
     }
     
     @IBAction func changeWaveOnTime(_ sender: UIButton) {
         let value = Int.random(in: 1...65000)
-        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.waveOnTime, value)
-        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveOnTime)
+        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.waveOnTime, value)
+        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.waveOnTime)
     }
     
     @IBAction func changeWaveOffTime(_ sender: UIButton) {
         let value = Int.random(in: 1...65000)
-        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.waveOffTime, value)
-        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveOffTime)
+        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.waveOffTime, value)
+        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.waveOffTime)
     }
     
     @IBAction func changeWaveTimeLimit(_ sender: UIButton) {
         let value = Int.random(in: 60...10800)
-        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.waveTimeLimit, value)
-        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.waveTimeLimit)
+        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.waveTimeLimit, value)
+        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.waveTimeLimit)
     }
     
     @IBAction func changeTempUpperLimit(_ sender: UIButton) {
         let value = Int.random(in: 30...43)
-        BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.tempUpperLimit, value)
-        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.tempUpperLimit)
+        CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.tempUpperLimit, value)
+        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.tempUpperLimit)
     }
     
     @IBAction func changeControlStatus(_ sender: UIButton) {
         switch status {
         case ControlStatusValues.on.rawValue:
-            BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.controlStatus, 1)
+            CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.controlStatus, 1)
         case ControlStatusValues.off.rawValue:
-            BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.controlStatus, 2)
+            CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.controlStatus, 2)
         case ControlStatusValues.onh.rawValue:
-            BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.controlStatus, 1)
+            CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.controlStatus, 1)
         case ControlStatusValues.onn.rawValue:
-            BLEManager.shared.writeCharacteristicValue(HeaterServicesCharacteristics.controlStatus, 1)
+            CharacteristicHandler.writeCharacteristic(HeaterServicesCharacteristics.controlStatus, 1)
         default:
             break
         }
-        BLEManager.shared.readCharacteristicValue(HeaterServicesCharacteristics.controlStatus)
+        BLEManager.shared.readValue(for: HeaterServicesCharacteristics.controlStatus)
     }
 }
 
 extension DetailViewController {
     func registerBLEClosures() {
-        BLEManager.shared.batteryLevelChanged = { [weak self] (level)  in
+        DataManager.shared.batteryLevelChanged = { [weak self] (level)  in
             guard let self = self else { return }
             self.getBatteryLevel(level)
         }
         
-        BLEManager.shared.systemStatsChanged = { [weak self] (stats)  in
+        DataManager.shared.systemStatsChanged = { [weak self] (stats)  in
             guard let self = self else { return }
             self.getSystemStats(stats)
         }
         
-        BLEManager.shared.initialOnTimeChanged = { [weak self] (time)  in
+        DataManager.shared.initialOnTimeChanged = { [weak self] (time)  in
             guard let self = self else { return }
             self.getInitialOnTime(time)
         }
         
-        BLEManager.shared.waveOnTimeChanged = { [weak self] (time)  in
+        DataManager.shared.waveOnTimeChanged = { [weak self] (time)  in
             guard let self = self else { return }
             self.getWaveOnTime(time)
         }
         
-        BLEManager.shared.waveOffTimeChanged = { [weak self] (time)  in
+        DataManager.shared.waveOffTimeChanged = { [weak self] (time)  in
             guard let self = self else { return }
             self.getWaveOffTime(time)
         }
         
-        BLEManager.shared.waveTimeChanged = { [weak self] (time)  in
+        DataManager.shared.waveTimeChanged = { [weak self] (time)  in
             guard let self = self else { return }
             self.getWaveTimeLimit(time)
         }
         
-        BLEManager.shared.tempUpperLimitChanged = { [weak self] (limit)  in
+        DataManager.shared.tempUpperLimitChanged = { [weak self] (limit)  in
             guard let self = self else { return }
             self.getTempUpperLimit(limit)
         }
         
-        BLEManager.shared.controlStatusChanged = { [weak self] (status)  in
+        DataManager.shared.controlStatusChanged = { [weak self] (status)  in
             guard let self = self else { return }
             self.getControlStatus(status)
         }

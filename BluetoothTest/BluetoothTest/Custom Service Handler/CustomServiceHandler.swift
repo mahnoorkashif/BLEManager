@@ -14,35 +14,62 @@ class CustomServiceHandler {
     
     func didDiscoverBatteryCharacteristics(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         guard let characteristics = service.characteristics else { return }
-        print("Custom Service Handler Called")
         for characteristic in characteristics {
             switch characteristic.uuid {
             case HeaterServicesCharacteristics.systemStats.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.systemStats, characteristic)
-                BLEManager.shared.setNotification(true, for: characteristic)
-                BLEManager.shared.readValue(for: characteristic)
+                setCharacteristics(HeaterServicesCharacteristics.systemStats, characteristic)
+                setNotification(true, for: characteristic)
+                readValue(for: characteristic)
             case HeaterServicesCharacteristics.initialOnTime.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.initialOnTime, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
+                setCharacteristics(HeaterServicesCharacteristics.initialOnTime, characteristic)
+                readValue(for: characteristic)
             case HeaterServicesCharacteristics.waveOnTime.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveOnTime, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
+                setCharacteristics(HeaterServicesCharacteristics.waveOnTime, characteristic)
+                readValue(for: characteristic)
             case HeaterServicesCharacteristics.waveOffTime.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveOffTime, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
+                setCharacteristics(HeaterServicesCharacteristics.waveOffTime, characteristic)
+                readValue(for: characteristic)
             case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveTimeLimit, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
+                setCharacteristics(HeaterServicesCharacteristics.waveTimeLimit, characteristic)
+                readValue(for: characteristic)
             case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.tempUpperLimit, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
+                setCharacteristics(HeaterServicesCharacteristics.tempUpperLimit, characteristic)
+                readValue(for: characteristic)
             case HeaterServicesCharacteristics.controlStatus.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.controlStatus, characteristic)
-                BLEManager.shared.setNotification(true, for: characteristic)
-                BLEManager.shared.readValue(for: characteristic)
+                setCharacteristics(HeaterServicesCharacteristics.controlStatus, characteristic)
+                setNotification(true, for: characteristic)
+                readValue(for: characteristic)
             default:
                 break
             }
+        }
+    }
+    
+    func didUpdateBatteryCharacteristics(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        switch characteristic.uuid {
+        case HeaterServicesCharacteristics.waveOnTime.getUUID():
+            let time = CharacteristicHandler.readUInt16Value(data: characteristic.value)
+            DataManager.shared.waveOnTimeUpdated(waveOnTime: time)
+        case HeaterServicesCharacteristics.waveOffTime.getUUID():
+            let time = CharacteristicHandler.readUInt16Value(data: characteristic.value)
+            DataManager.shared.waveOffTimeUpdated(waveOffTime: time)
+        case HeaterServicesCharacteristics.systemStats.getUUID():
+            let temperature = CharacteristicHandler.readIntValue(data: characteristic.value)
+            DataManager.shared.systemStatsUpdated(systemStats: temperature)
+        case HeaterServicesCharacteristics.controlStatus.getUUID():
+            let status = CharacteristicHandler.readUInt8Value(data: characteristic.value)
+            DataManager.shared.controlStatusUpdated(status: status)
+        case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
+            let time = CharacteristicHandler.readUInt16Value(data: characteristic.value)
+            DataManager.shared.waveTimeUpdated(waveTime: time)
+        case HeaterServicesCharacteristics.initialOnTime.getUUID():
+            let time = CharacteristicHandler.readUInt16Value(data: characteristic.value)
+            DataManager.shared.initialOnTimeUpdated(initialOnTime: time)
+        case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
+            let limit = CharacteristicHandler.readUInt8Value(data: characteristic.value)
+            DataManager.shared.tempUpperLimitUpdated(tempUpperLimit: limit)
+        default:
+            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
         }
     }
     
@@ -59,6 +86,30 @@ class CustomServiceHandler {
     func readValue(for characteristic: CBCharacteristic) {
         if characteristic.properties.contains(.read) {
             BLEManager.shared.currentPeripheral?.readValue(for: characteristic)
+        }
+    }
+    
+    func writeValue(_ characteristic: HeaterServicesCharacteristics, value: Int) {
+        guard let characteristicValue = BLEManager.shared.getCharacteristics(with: characteristic.getValue()) else { return }
+        switch characteristic {
+        case .waveOnTime:
+            CharacteristicHandler.writeUInt16Value(characteristicValue, UInt16(value))
+        case .waveOffTime:
+            CharacteristicHandler.writeUInt16Value(characteristicValue, UInt16(value))
+        case .systemStats:
+            break
+        case .controlStatus:
+            CharacteristicHandler.writeUInt8Value(characteristicValue, UInt8(value))
+        case .waveTimeLimit:
+            CharacteristicHandler.writeUInt16Value(characteristicValue, UInt16(value))
+        case .initialOnTime:
+            CharacteristicHandler.writeUInt16Value(characteristicValue, UInt16(value))
+        case .tempUpperLimit:
+            CharacteristicHandler.writeUInt8Value(characteristicValue, UInt8(value))
+        case .batteryLevel:
+            break
+        case .deviceFirmware:
+            break
         }
     }
 }

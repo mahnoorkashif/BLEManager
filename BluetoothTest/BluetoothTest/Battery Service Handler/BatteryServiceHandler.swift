@@ -19,11 +19,20 @@ class BatteryServiceHandler {
             case HeaterServicesCharacteristics.batteryLevel.getUUID():
                 setCharacteristics(HeaterServicesCharacteristics.batteryLevel, characteristic)
                 setNotification(true, for: characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-                print("battery handler called")
+                readValue(for: characteristic)
             default:
                 break
             }
+        }
+    }
+    
+    func didUpdateBatteryCharacteristics(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        switch characteristic.uuid {
+        case HeaterServicesCharacteristics.batteryLevel.getUUID():
+            let level = CharacteristicHandler.readUInt8Value(data: characteristic.value)
+            DataManager.shared.batteryLevelUpdated(battery: String(level))
+        default:
+            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
         }
     }
     

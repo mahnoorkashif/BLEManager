@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4A0F575F23992FE5004A9D30 /* CharacteristicWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0F575E23992FE5004A9D30 /* CharacteristicWriter.swift */; };
-		4A27A0DA2355AF9C00032487 /* CharacteristicReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A27A0D92355AF9C00032487 /* CharacteristicReader.swift */; };
 		4A27A0DC2355B91800032487 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A27A0DB2355B91800032487 /* BLEManager.swift */; };
 		4A4B1B3A2359B4FC00F39291 /* DataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4B1B392359B4FC00F39291 /* DataConverter.swift */; };
-		4A4B1B3C235A100800F39291 /* BLECommunicationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4B1B3B235A100800F39291 /* BLECommunicationProtocol.swift */; };
 		4A5EB65023A8BB0A00492339 /* ServicesAndCharacteristics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5EB64F23A8BB0A00492339 /* ServicesAndCharacteristics.swift */; };
 		4A5EB65A23A8D83300492339 /* BatteryServiceHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5EB65923A8D83300492339 /* BatteryServiceHandler.swift */; };
 		4A83E99B2358833B006C9A58 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A83E99A2358833B006C9A58 /* DetailViewController.swift */; };
 		4AF3349A23ACC3BE006F2F3C /* CustomServiceHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3349923ACC3BE006F2F3C /* CustomServiceHandler.swift */; };
+		4AF3349C23ACE374006F2F3C /* CharacteristicHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3349B23ACE374006F2F3C /* CharacteristicHandler.swift */; };
+		4AF3349E23ACE60E006F2F3C /* HeaterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3349D23ACE60E006F2F3C /* HeaterModel.swift */; };
+		4AF334A323ACF08B006F2F3C /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF334A223ACF08B006F2F3C /* DataManager.swift */; };
 		4AF70C3F2354ABBE00D1D1C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF70C3E2354ABBE00D1D1C0 /* AppDelegate.swift */; };
 		4AF70C412354ABBE00D1D1C0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF70C402354ABBE00D1D1C0 /* ViewController.swift */; };
 		4AF70C442354ABBE00D1D1C0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AF70C422354ABBE00D1D1C0 /* Main.storyboard */; };
@@ -24,15 +24,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4A0F575E23992FE5004A9D30 /* CharacteristicWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicWriter.swift; sourceTree = "<group>"; };
-		4A27A0D92355AF9C00032487 /* CharacteristicReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicReader.swift; sourceTree = "<group>"; };
 		4A27A0DB2355B91800032487 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		4A4B1B392359B4FC00F39291 /* DataConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataConverter.swift; sourceTree = "<group>"; };
-		4A4B1B3B235A100800F39291 /* BLECommunicationProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLECommunicationProtocol.swift; sourceTree = "<group>"; };
 		4A5EB64F23A8BB0A00492339 /* ServicesAndCharacteristics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesAndCharacteristics.swift; sourceTree = "<group>"; };
 		4A5EB65923A8D83300492339 /* BatteryServiceHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryServiceHandler.swift; sourceTree = "<group>"; };
 		4A83E99A2358833B006C9A58 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		4AF3349923ACC3BE006F2F3C /* CustomServiceHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomServiceHandler.swift; sourceTree = "<group>"; };
+		4AF3349B23ACE374006F2F3C /* CharacteristicHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacteristicHandler.swift; sourceTree = "<group>"; };
+		4AF3349D23ACE60E006F2F3C /* HeaterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaterModel.swift; sourceTree = "<group>"; };
+		4AF334A223ACF08B006F2F3C /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		4AF70C3B2354ABBE00D1D1C0 /* BluetoothTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AF70C3E2354ABBE00D1D1C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4AF70C402354ABBE00D1D1C0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -70,20 +70,11 @@
 			path = "Bluetooth Manager";
 			sourceTree = "<group>";
 		};
-		4A5EB65323A8C1FB00492339 /* Bluetooth Protocols */ = {
-			isa = PBXGroup;
-			children = (
-				4A4B1B3B235A100800F39291 /* BLECommunicationProtocol.swift */,
-			);
-			path = "Bluetooth Protocols";
-			sourceTree = "<group>";
-		};
 		4A5EB65423A8C20900492339 /* Data Handlers */ = {
 			isa = PBXGroup;
 			children = (
-				4A27A0D92355AF9C00032487 /* CharacteristicReader.swift */,
-				4A0F575E23992FE5004A9D30 /* CharacteristicWriter.swift */,
 				4A4B1B392359B4FC00F39291 /* DataConverter.swift */,
+				4AF3349B23ACE374006F2F3C /* CharacteristicHandler.swift */,
 			);
 			path = "Data Handlers";
 			sourceTree = "<group>";
@@ -101,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				4A5EB64F23A8BB0A00492339 /* ServicesAndCharacteristics.swift */,
+				4AF3349D23ACE60E006F2F3C /* HeaterModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -119,6 +111,14 @@
 				4AF3349923ACC3BE006F2F3C /* CustomServiceHandler.swift */,
 			);
 			path = "Custom Service Handler";
+			sourceTree = "<group>";
+		};
+		4AF3349F23ACE6ED006F2F3C /* Data Manager */ = {
+			isa = PBXGroup;
+			children = (
+				4AF334A223ACF08B006F2F3C /* DataManager.swift */,
+			);
+			path = "Data Manager";
 			sourceTree = "<group>";
 		};
 		4AF70C322354ABBE00D1D1C0 = {
@@ -143,9 +143,9 @@
 				4AF70C3E2354ABBE00D1D1C0 /* AppDelegate.swift */,
 				4A5EB65723A8C5E900492339 /* Battery Service Handler */,
 				4A5EB65223A8C1DD00492339 /* Bluetooth Manager */,
-				4A5EB65323A8C1FB00492339 /* Bluetooth Protocols */,
 				4A5EB65823A8C6A400492339 /* Custom Service Handler */,
 				4A5EB65423A8C20900492339 /* Data Handlers */,
+				4AF3349F23ACE6ED006F2F3C /* Data Manager */,
 				4A5EB65623A8C25000492339 /* Models */,
 				4A5EB65523A8C22900492339 /* Story Boards */,
 				4A5EB65123A8C1CC00492339 /* View Controllers */,
@@ -227,16 +227,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AF70C412354ABBE00D1D1C0 /* ViewController.swift in Sources */,
+				4AF3349C23ACE374006F2F3C /* CharacteristicHandler.swift in Sources */,
 				4A4B1B3A2359B4FC00F39291 /* DataConverter.swift in Sources */,
 				4A27A0DC2355B91800032487 /* BLEManager.swift in Sources */,
-				4A4B1B3C235A100800F39291 /* BLECommunicationProtocol.swift in Sources */,
 				4A83E99B2358833B006C9A58 /* DetailViewController.swift in Sources */,
 				4A5EB65023A8BB0A00492339 /* ServicesAndCharacteristics.swift in Sources */,
-				4A0F575F23992FE5004A9D30 /* CharacteristicWriter.swift in Sources */,
+				4AF3349E23ACE60E006F2F3C /* HeaterModel.swift in Sources */,
 				4AF70C3F2354ABBE00D1D1C0 /* AppDelegate.swift in Sources */,
+				4AF334A323ACF08B006F2F3C /* DataManager.swift in Sources */,
 				4A5EB65A23A8D83300492339 /* BatteryServiceHandler.swift in Sources */,
 				4AF3349A23ACC3BE006F2F3C /* CustomServiceHandler.swift in Sources */,
-				4A27A0DA2355AF9C00032487 /* CharacteristicReader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,23 +9,14 @@
 import Foundation
 import CoreBluetooth
 
-class BLEManager: NSObject, BLECommunicationProtocol {
+class BLEManager: NSObject {
     //MARK:- Properties
     private var deviceName              : String?
     static let shared                   = BLEManager()
 
-    internal var currentPeripheral       : CBPeripheral?
+    internal var currentPeripheral      : CBPeripheral?
     private(set) var centralManager     : CBCentralManager?
     private(set) var allPeripherals     : [CBPeripheral]?
-    
-    var waveTimeChanged                 : ((UInt16)->())? = nil
-    var waveOnTimeChanged               : ((UInt16)->())? = nil
-    var waveOffTimeChanged              : ((UInt16)->())? = nil
-    var systemStatsChanged              : ((Int)->())?    = nil
-    var batteryLevelChanged             : ((String)->())? = nil
-    var controlStatusChanged            : ((UInt8)->())?  = nil
-    var initialOnTimeChanged            : ((UInt16)->())? = nil
-    var tempUpperLimitChanged           : ((UInt8)->())?  = nil
     
     var getConnectionStatus             : ((String)->())?
     var addNewPeripheralToList          : (([CBPeripheral])->())?
@@ -48,15 +39,6 @@ extension BLEManager {
         self.deviceName = deviceName
     }
     
-    /// Function to read value of a specific characteristic if it contains the read property.
-    ///
-    /// - Parameter characteristic: characteristic for reading its value.
-    func readValue(for characteristic: CBCharacteristic) {
-        if characteristic.properties.contains(.read) {
-            currentPeripheral?.readValue(for: characteristic)
-        }
-    }
-    
     /// Function to write value to a specific characteristic if it contains the write property.
     ///
     /// - Parameters:
@@ -69,19 +51,19 @@ extension BLEManager {
         }
     }
     
-    /// Function to write value to a specific characteristic if it contains the notify property.
-    ///
-    /// - Parameters:
-    ///   - enabled: set notification true or false.
-    ///   - characteristic: characteristic to set notification of.
-    func setNotification(_ enabled: Bool, for characteristic: CBCharacteristic) {
-        if characteristic.properties.contains(.notify) {
-            currentPeripheral?.setNotifyValue(enabled, for: characteristic)
+    func readValue(for characteristic: HeaterServicesCharacteristics) {
+        guard let characteristic = BLEManager.shared.getCharacteristics(with: characteristic.getValue()) else { return }
+        if characteristic.service.uuid == HeaterServices.batteryService.getUUID() {
+            BatteryServiceHandler.shared.readValue(for: characteristic)
+        } else if characteristic.service.uuid == HeaterServices.customService.getUUID() {
+            CustomServiceHandler.shared.readValue(for: characteristic)
         }
     }
     
-    /// Function to connect peripheral to phone.
-    func connectPeripheral() {
+    func connectToPeripheral(at index: Int) {
+        guard let newCurrent = BLEManager.shared.allPeripherals?[index] else { return }
+        BLEManager.shared.disconnectCurrentPeripheral()
+        BLEManager.shared.setCurrentPeripheral(newCurrent)
         guard let bluetoothPeripheral = currentPeripheral else { return }
         centralManager?.connect(bluetoothPeripheral)
     }
@@ -100,15 +82,6 @@ extension BLEManager {
         currentPeripheral?.delegate = self
     }
     
-    /// Function to store reference of a service characteristic in an array.
-    ///
-    /// - Parameters:
-    ///   - type: type of characteristic
-    ///   - characteristic: the actual characteristic
-    func setCharacteristics(_ type: HeaterServicesCharacteristics, _ characteristic: CBCharacteristic) {
-        characteristicMap.append((type, characteristic))
-    }
-    
     /// Function to get characteristic from the stored references.
     ///
     /// - Parameter uuid: uuidString of the characteristic.
@@ -116,18 +89,6 @@ extension BLEManager {
     func getCharacteristics(with uuid: String) -> CBCharacteristic? {
         let characteristic = characteristicMap.first(where: {$0.type.getValue() == uuid })
         return characteristic?.object
-    }
-    
-    /// Function to reset Characteristic Listeners.
-    func resetListners() {
-        waveTimeChanged       = nil
-        waveOnTimeChanged     = nil
-        waveOffTimeChanged    = nil
-        systemStatsChanged    = nil
-        batteryLevelChanged   = nil
-        controlStatusChanged  = nil
-        initialOnTimeChanged  = nil
-        tempUpperLimitChanged = nil
     }
 }
 
@@ -177,33 +138,10 @@ extension BLEManager: CBPeripheralDelegate {
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        switch characteristic.uuid {
-        case HeaterServicesCharacteristics.batteryLevel.getUUID():
-            let level = CharacteristicReader.readUInt8Value(data: characteristic.value)
-            batteryLevelChanged?(String(level))
-        case HeaterServicesCharacteristics.waveOnTime.getUUID():
-            let time = CharacteristicReader.readUInt16Value(data: characteristic.value)
-            waveOnTimeChanged?(time)
-        case HeaterServicesCharacteristics.waveOffTime.getUUID():
-            let time = CharacteristicReader.readUInt16Value(data: characteristic.value)
-            waveOffTimeChanged?(time)
-        case HeaterServicesCharacteristics.systemStats.getUUID():
-            let temperature = CharacteristicReader.readIntValue(data: characteristic.value)
-            systemStatsChanged?(temperature)
-        case HeaterServicesCharacteristics.controlStatus.getUUID():
-            let status = CharacteristicReader.readUInt8Value(data: characteristic.value)
-            controlStatusChanged?(status)
-        case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
-            let time = CharacteristicReader.readUInt16Value(data: characteristic.value)
-            waveTimeChanged?(time)
-        case HeaterServicesCharacteristics.initialOnTime.getUUID():
-            let time = CharacteristicReader.readUInt16Value(data: characteristic.value)
-            initialOnTimeChanged?(time)
-        case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
-            let limit = CharacteristicReader.readUInt8Value(data: characteristic.value)
-            tempUpperLimitChanged?(limit)
-        default:
-            print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+        if characteristic.service.uuid == HeaterServices.batteryService.getUUID() {
+            BatteryServiceHandler.shared.didUpdateBatteryCharacteristics(peripheral, didUpdateValueFor: characteristic, error: error)
+        } else if characteristic.service.uuid == HeaterServices.customService.getUUID() {
+            CustomServiceHandler.shared.didUpdateBatteryCharacteristics(peripheral, didUpdateValueFor: characteristic, error: error)
         }
     }
 }
