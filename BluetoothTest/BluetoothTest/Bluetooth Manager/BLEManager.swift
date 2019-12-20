@@ -14,7 +14,7 @@ class BLEManager: NSObject, BLECommunicationProtocol {
     private var deviceName              : String?
     static let shared                   = BLEManager()
 
-    private var currentPeripheral       : CBPeripheral?
+    internal var currentPeripheral       : CBPeripheral?
     private(set) var centralManager     : CBCentralManager?
     private(set) var allPeripherals     : [CBPeripheral]?
     
@@ -30,7 +30,7 @@ class BLEManager: NSObject, BLECommunicationProtocol {
     var getConnectionStatus             : ((String)->())?
     var addNewPeripheralToList          : (([CBPeripheral])->())?
     
-    private var characteristicMap       : [(type: HeaterServicesCharacteristics, object: CBCharacteristic?)] = []
+    internal var characteristicMap       : [(type: HeaterServicesCharacteristics, object: CBCharacteristic?)] = []
     
     //MARK:- Initializer
     private override init() {
@@ -169,42 +169,10 @@ extension BLEManager: CBPeripheralDelegate {
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        guard let characteristics = service.characteristics else { return }
-        for characteristic in characteristics {
-            switch characteristic.uuid {
-            case HeaterServicesCharacteristics.systemStats.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.systemStats, characteristic)
-                BLEManager.shared.setNotification(true, for: characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-            case HeaterServicesCharacteristics.initialOnTime.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.initialOnTime, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-            case HeaterServicesCharacteristics.waveOnTime.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveOnTime, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-            case HeaterServicesCharacteristics.waveOffTime.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveOffTime, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-            case HeaterServicesCharacteristics.waveTimeLimit.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.waveTimeLimit, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-            case HeaterServicesCharacteristics.tempUpperLimit.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.tempUpperLimit, characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-            case HeaterServicesCharacteristics.controlStatus.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.controlStatus, characteristic)
-                BLEManager.shared.setNotification(true, for: characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-            case HeaterServicesCharacteristics.batteryLevel.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.batteryLevel, characteristic)
-                BLEManager.shared.setNotification(true, for: characteristic)
-                BLEManager.shared.readValue(for: characteristic)
-            case HeaterServicesCharacteristics.deviceFirmware.getUUID():
-                BLEManager.shared.setCharacteristics(HeaterServicesCharacteristics.deviceFirmware, characteristic)
-                BLEManager.shared.setNotification(true, for: characteristic)
-            default:
-                print("Unhandled Characteristic UUID: \(characteristic.uuid)")
-            }
+        if service.uuid == HeaterServices.batteryService.getUUID() {
+            BatteryServiceHandler.shared.didDiscoverBatteryCharacteristics(peripheral, didDiscoverCharacteristicsFor: service, error: error)
+        } else if service.uuid == HeaterServices.customService.getUUID() {
+            CustomServiceHandler.shared.didDiscoverBatteryCharacteristics(peripheral, didDiscoverCharacteristicsFor: service, error: error)
         }
     }
     
