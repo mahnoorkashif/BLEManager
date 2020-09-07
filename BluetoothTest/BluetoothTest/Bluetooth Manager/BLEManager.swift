@@ -9,6 +9,7 @@
 import Foundation
 import CoreBluetooth
 
+//grouping
 class BLEManager: NSObject {
     //MARK:- Properties
     private var deviceName              : String?
@@ -21,7 +22,7 @@ class BLEManager: NSObject {
     var getConnectionStatus             : ((String)->())?
     var addNewPeripheralToList          : (([CBPeripheral])->())?
     
-    internal var characteristicMap       : [(type: HeaterServicesCharacteristics, object: CBCharacteristic?)] = []
+    internal var characteristicMap      : [(type: HeaterServicesCharacteristics, object: CBCharacteristic?)] = []
     
     //MARK:- Initializer
     private override init() {
@@ -69,7 +70,7 @@ extension BLEManager {
         centralManager?.connect(bluetoothPeripheral)
     }
     
-    /// Function to disconnect function from phone.
+    /// Function to disconnect function from phone. 
     func disconnectCurrentPeripheral() {
         guard let bluetoothPeripheral = currentPeripheral else { return }
         centralManager?.cancelPeripheralConnection(bluetoothPeripheral)
@@ -111,6 +112,7 @@ extension BLEManager: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         getConnectionStatus?(peripheral.name ?? "No device")
+        //peripheral.services
         let serviceUUIDs = [HeaterServices.customService.getUUID(), HeaterServices.batteryService.getUUID(), HeaterServices.deviceFirmwareUpdateService.getUUID()]
         currentPeripheral?.discoverServices(serviceUUIDs)
     }
